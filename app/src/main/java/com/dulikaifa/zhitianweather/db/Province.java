@@ -9,7 +9,7 @@ import org.litepal.crud.DataSupport;
  * Usage :
  */
 
-public class Provice extends DataSupport {
+public class Province extends DataSupport {
 
     private int id;
 
