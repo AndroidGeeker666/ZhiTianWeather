@@ -1,5 +1,6 @@
 package com.dulikaifa.zhitianweather;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -24,6 +25,7 @@ import com.dulikaifa.zhitianweather.bean.Weather;
 import com.dulikaifa.zhitianweather.http.JsonRequestCallback;
 import com.dulikaifa.zhitianweather.http.OkHttpUtil;
 import com.dulikaifa.zhitianweather.http.Url;
+import com.dulikaifa.zhitianweather.service.AutoUpdateService;
 import com.dulikaifa.zhitianweather.util.HandleJsonUtil;
 
 import butterknife.ButterKnife;
@@ -78,6 +80,8 @@ public class WeatherActivity extends AppCompatActivity {
         ButterKnife.inject(this);
         initView();
         initListener();
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
     //使状态栏透明
@@ -179,7 +183,7 @@ public class WeatherActivity extends AppCompatActivity {
      */
     private void showWeatherInfo(Weather weather) {
         titleCity.setText(weather.basic.cityName);
-        titleUpdateTime.setText("更新于："+weather.basic.update.updateTime.split(" ")[1]);
+        titleUpdateTime.setText("更新于"+weather.basic.update.updateTime.split(" ")[1]);
         degreeText.setText(weather.now.temperature + "℃");
         weatherInfoText.setText(weather.now.more.info);
         forecastLayout.removeAllViews();
