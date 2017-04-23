@@ -6,9 +6,9 @@
     <version value="1" />
 
     <list>
-        <mapping class="com.zhitianweather.android.db.Province" />
-        <mapping class="com.zhitianweather.android.db.City" />
-        <mapping class="com.zhitianweather.android.db.County" />
+        <mapping class="com.dulikaifa.zhitianweather.db.Province" />
+        <mapping class="com.dulikaifa.zhitianweather.db.City" />
+        <mapping class="com.dulikaifa.zhitianweather.db.County" />
     </list>
 
 </litepal>

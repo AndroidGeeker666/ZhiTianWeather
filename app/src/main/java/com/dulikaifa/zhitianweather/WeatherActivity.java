@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -24,7 +25,6 @@ import com.dulikaifa.zhitianweather.http.JsonRequestCallback;
 import com.dulikaifa.zhitianweather.http.OkHttpUtil;
 import com.dulikaifa.zhitianweather.http.Url;
 import com.dulikaifa.zhitianweather.util.HandleJsonUtil;
-import com.dulikaifa.zhitianweather.util.SpUtil;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -74,8 +74,8 @@ public class WeatherActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         transparentStatusBar();
-        ButterKnife.inject(this);
         setContentView(R.layout.activity_weather);
+        ButterKnife.inject(this);
         initView();
         initListener();
     }
@@ -91,14 +91,15 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        SharedPreferences sp = SpUtil.getInstance(this).getSp();
-        String bingPic = sp.getString("bing_pic", null);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String bingPic = prefs.getString("bing_pic", null);
         if (bingPic != null) {//本地有缓存的必应图片，直接从缓存中加载
             Glide.with(this).load(bingPic).into(bingPicImg);
         } else {            //本地没有缓存的必应图片，则从网络请求
             loadBingPic();
         }
-        String weatherStr = sp.getString("weather", null);
+        String weatherStr = prefs.getString("weather", null);
+
         if (weatherStr != null) {   //本地有天气缓存数据，则优先显示缓存数据
             Weather weather = HandleJsonUtil.handleWeatherResponse(weatherStr);
             if (weather != null) {
@@ -119,7 +120,9 @@ public class WeatherActivity extends AppCompatActivity {
         OkHttpUtil.getInstance().getAsync(Url.BINGPIC_URL, new JsonRequestCallback() {
             @Override
             public void onRequestSucess(String result) {
-                SpUtil.getInstance(WeatherActivity.this).putString("bing_pic", result);
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
+                editor.putString("bing_pic", result);
+                editor.apply();
                 Glide.with(WeatherActivity.this).load(result).into(bingPicImg);
             }
 
@@ -143,14 +146,23 @@ public class WeatherActivity extends AppCompatActivity {
      * 根据天气id请求城市天气信息。
      */
     public void requesWeather(String weatherId) {
-        String weatherUrl = Url.WEATHER_Url + "?cityid" + weatherId + "&" + Url.APP_KEY;
+        String weatherUrl = Url.WEATHER_Url + "?cityid=" + weatherId + "&key=" + Url.APP_KEY;
+
         OkHttpUtil.getInstance().getAsync(weatherUrl, new JsonRequestCallback() {
             @Override
             public void onRequestSucess(String result) {
                 swipeRefresh.setRefreshing(false);
                 Weather weather = HandleJsonUtil.handleWeatherResponse(result);
-                SpUtil.getInstance(WeatherActivity.this).putString("weather", result);
-                showWeatherInfo(weather);
+                if(weather!=null&& "ok".equals(weather.status)){
+                    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
+                    editor.putString("weather", result);
+                    editor.apply();
+                    mWeatherId=weather.basic.weatherId;
+                    showWeatherInfo(weather);
+                } else {
+                    Toast.makeText(WeatherActivity.this, "获取天气信息失败,请检查网络", Toast.LENGTH_SHORT).show();
+                }
+
             }
 
             @Override
@@ -167,7 +179,7 @@ public class WeatherActivity extends AppCompatActivity {
      */
     private void showWeatherInfo(Weather weather) {
         titleCity.setText(weather.basic.cityName);
-        titleUpdateTime.setText(weather.basic.update.updateTime.split(" ")[1]);
+        titleUpdateTime.setText("更新于："+weather.basic.update.updateTime.split(" ")[1]);
         degreeText.setText(weather.now.temperature + "℃");
         weatherInfoText.setText(weather.now.more.info);
         forecastLayout.removeAllViews();
