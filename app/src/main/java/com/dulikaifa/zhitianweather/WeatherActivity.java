@@ -185,7 +185,7 @@ public class WeatherActivity extends AppCompatActivity {
         titleCity.setText(weather.basic.cityName);
         titleUpdateTime.setText("更新于"+weather.basic.update.updateTime.split(" ")[1]);
         degreeText.setText(weather.now.temperature + "℃");
-        weatherInfoText.setText(weather.now.more.info);
+        weatherInfoText.setText(weather.now.condition.weather);
         forecastLayout.removeAllViews();
         for (Forecast forecast : weather.forecastList) {
             View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false);
@@ -194,7 +194,7 @@ public class WeatherActivity extends AppCompatActivity {
             TextView maxText = (TextView) view.findViewById(R.id.max_text);
             TextView minText = (TextView) view.findViewById(R.id.min_text);
             dateText.setText(forecast.date);
-            infoText.setText(forecast.more.info);
+            infoText.setText(forecast.condition.weatherDay);
             maxText.setText(forecast.temperature.max);
             minText.setText(forecast.temperature.min);
             forecastLayout.addView(view);
@@ -203,9 +203,9 @@ public class WeatherActivity extends AppCompatActivity {
             aqiText.setText(weather.aqi.city.aqi);
             pm25Text.setText(weather.aqi.city.pm25);
         }
-        String comfort = "舒适度：" + weather.suggestion.comfort.info;
-        String carWash = "洗车指数：" + weather.suggestion.carWash.info;
-        String sport = "运动建议：" + weather.suggestion.sport.info;
+        String comfort = "舒适度：" + weather.suggestion.comfortIndex.info;
+        String carWash = "洗车指数：" + weather.suggestion.carWashIndex.info;
+        String sport = "运动建议：" + weather.suggestion.sportIndex.info;
         comfortText.setText(comfort);
         carWashText.setText(carWash);
         sportText.setText(sport);
