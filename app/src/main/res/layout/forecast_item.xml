@@ -1,42 +1,452 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="15dp">
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="#7000"
+              android:orientation="vertical"
+    >
 
-    <TextView
-        android:id="@+id/date_text"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="2"
-        android:textColor="#fff"/>
+        android:layout_margin="15dp"
+        >
 
-    <TextView
-        android:id="@+id/info_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:textColor="#fff"/>
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2017-4-24"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/max_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:gravity="right"
-        android:textColor="#fff"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/white"/>
 
-    <TextView
-        android:id="@+id/min_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:gravity="right"
-        android:textColor="#fff"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal">
+        <!--天气-->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
+            <TextView
+                android:id="@+id/sky"
+                style="@style/ForecastStyle"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="天气"/>
+
+            <TextView
+                android:id="@+id/sky_text"
+                style="@style/ForecastStyle"
+                android:layout_below="@id/sky"
+                android:textSize="14sp"
+                android:textColor="#FFF300"
+                android:text="晴转阴"/>
+        </RelativeLayout>
+        <!--气温-->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/temp"
+                style="@style/ForecastStyle"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="气温"/>
+
+            <TextView
+                android:id="@+id/temp_text"
+                style="@style/ForecastStyle"
+                android:layout_below="@id/temp"
+                android:textSize="14sp"
+                android:textColor="#FFF300"
+                android:text="12~28℃"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/white"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal">
+        <!--风向角-->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/winddeg"
+                style="@style/ForecastStyle"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="风向角"/>
+
+            <TextView
+                android:id="@+id/winddeg_text"
+                style="@style/ForecastStyle"
+                android:layout_below="@id/winddeg"
+                android:textSize="14sp"
+                android:textColor="#FFF300"
+                android:text="155°"/>
+        </RelativeLayout>
+        <!--风向-->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/winddir"
+                style="@style/ForecastStyle"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="风向"/>
+
+            <TextView
+                android:id="@+id/winddir_text"
+                style="@style/ForecastStyle"
+                android:layout_below="@id/winddir"
+                android:textSize="14sp"
+                android:textColor="#FFF300"
+                android:text="东南风"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/white"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal">
+        <!--风力-->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/windpower"
+                style="@style/ForecastStyle"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="风力"/>
+
+            <TextView
+                android:id="@+id/windpower_text"
+                style="@style/ForecastStyle"
+                android:layout_below="@id/windpower"
+                android:textSize="14sp"
+                android:textColor="#FFF300"
+                android:text="3级"/>
+        </RelativeLayout>
+        <!--风速-->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/windspeed"
+                style="@style/ForecastStyle"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="风速"/>
+
+            <TextView
+                android:id="@+id/windspeed_text"
+                style="@style/ForecastStyle"
+                android:layout_below="@id/windspeed"
+                android:textSize="14sp"
+                android:textColor="#FFF300"
+                android:text="19kmph"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/white"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal">
+        <!--相对湿度-->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/humidity"
+                style="@style/ForecastStyle"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="相对湿度"/>
+
+            <TextView
+                android:id="@+id/humidity_text"
+                style="@style/ForecastStyle"
+                android:layout_below="@id/humidity"
+                android:textSize="14sp"
+                android:textColor="#FFF300"
+                android:text="17%"/>
+        </RelativeLayout>
+        <!--降水概率-->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/rainProbability"
+                style="@style/ForecastStyle"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="降水概率"/>
+
+            <TextView
+                android:id="@+id/rainProbability_text"
+                style="@style/ForecastStyle"
+                android:layout_below="@id/rainProbability"
+                android:textSize="14sp"
+                android:textColor="#FFF300"
+                android:text="0"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/white"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal">
+        <!--降水量-->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/rainAmout"
+                style="@style/ForecastStyle"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="降水量"/>
+
+            <TextView
+                android:id="@+id/rainAmout_text"
+                style="@style/ForecastStyle"
+                android:layout_below="@id/rainAmout"
+                android:textSize="14sp"
+                android:textColor="#FFF300"
+                android:text="0.0mm"/>
+        </RelativeLayout>
+        <!--气压-->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/atmospheric"
+                style="@style/ForecastStyle"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="气压"/>
+
+            <TextView
+                android:id="@+id/atmospheric_text"
+                style="@style/ForecastStyle"
+                android:layout_below="@id/atmospheric"
+                android:textSize="14sp"
+                android:textColor="#FFF300"
+                android:text="997兆帕"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/white"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal">
+        <!--紫外线-->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/ultravioletRay"
+                style="@style/ForecastStyle"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="紫外线"/>
+
+            <TextView
+                android:id="@+id/ultraviolet_Ray_text"
+                style="@style/ForecastStyle"
+                android:layout_below="@id/ultravioletRay"
+                android:textSize="14sp"
+                android:textColor="#FFF300"
+                android:text="8级"/>
+        </RelativeLayout>
+        <!--能见度-->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/visibility"
+                style="@style/ForecastStyle"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="能见度"/>
+
+            <TextView
+                android:id="@+id/visibility_text"
+                style="@style/ForecastStyle"
+                android:layout_below="@id/visibility"
+                android:textSize="14sp"
+                android:textColor="#FFF300"
+                android:text="1km"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/white"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal">
+        <!--日出-->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/sunrise"
+                style="@style/ForecastStyle"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="日出"/>
+
+            <TextView
+                android:id="@+id/sunrise_text"
+                style="@style/ForecastStyle"
+                android:layout_below="@id/sunrise"
+                android:textSize="14sp"
+                android:textColor="#FFF300"
+                android:text="05:41"/>
+        </RelativeLayout>
+        <!--日落-->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/sunset"
+                style="@style/ForecastStyle"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="日落"/>
+
+            <TextView
+                android:id="@+id/sunset_text"
+                style="@style/ForecastStyle"
+                android:layout_below="@id/sunset"
+                android:textSize="14sp"
+                android:textColor="#FFF300"
+                android:text="18:47"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/white"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal">
+        <!--月出-->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/moonrise"
+                style="@style/ForecastStyle"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="月出"/>
+
+            <TextView
+                android:id="@+id/moonrise_text"
+                style="@style/ForecastStyle"
+                android:layout_below="@id/moonrise"
+                android:textSize="14sp"
+                android:textColor="#FFF300"
+                android:text="04:19"/>
+        </RelativeLayout>
+        <!--月落-->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/moonset"
+                style="@style/ForecastStyle"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:text="月落"/>
+
+            <TextView
+                android:id="@+id/moonset_text"
+                style="@style/ForecastStyle"
+                android:layout_below="@id/moonset"
+                android:textSize="14sp"
+                android:textColor="#FFF300"
+                android:text="18:07"/>
+        </RelativeLayout>
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/white"/>
 </LinearLayout>

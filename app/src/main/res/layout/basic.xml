@@ -1,34 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize">
-
-    <Button
-        android:id="@+id/nav_button"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginLeft="10dp"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:background="@mipmap/ic_home" />
-
-    <TextView
-        android:id="@+id/title_city"
-        android:layout_width="wrap_content"
+    android:layout_height="60dp"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/nav_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:background="@mipmap/ic_home"/>
+        <TextView
+            android:id="@+id/basic_city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:text="北京"
+            android:textColor="#FFF"
+            android:textSize="20sp"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:textColor="#fff"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/title_update_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:textColor="#fff"
-        android:textSize="16sp"/>
-
-</RelativeLayout>
+        android:layout_marginTop="10dp"
+        >
+        <TextView
+            android:id="@+id/basic_updatetime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="10dp"
+            android:text="2017-4-24 18:59"
+            android:textColor="#FFF300"
+            android:textSize="14sp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="更新于"
+            android:layout_toLeftOf="@id/basic_updatetime"
+            android:layout_alignBottom="@id/basic_updatetime"
+            android:textColor="#fff"
+            android:textSize="14sp"
+            />
+    </RelativeLayout>
+</LinearLayout>

@@ -22,7 +22,6 @@ import com.dulikaifa.zhitianweather.http.JsonRequestCallback;
 import com.dulikaifa.zhitianweather.http.OkHttpUtil;
 import com.dulikaifa.zhitianweather.http.Url;
 import com.dulikaifa.zhitianweather.util.HandleJsonUtil;
-import com.orhanobut.logger.Logger;
 
 import org.litepal.crud.DataSupport;
 
@@ -161,7 +160,6 @@ public class ChooseAreaFragment extends Fragment {
         titleText.setText(selectedProvince.getProvinceName());
         backButton.setVisibility(View.VISIBLE);
         cityList = DataSupport.where("provinceid=?", String.valueOf(selectedProvince.getId())).find(City.class);
-        Logger.d("我的日志",cityList);
         if (cityList.size() > 0) {
             dataList.clear();
             for (City city : cityList) {

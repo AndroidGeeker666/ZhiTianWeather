@@ -4,13 +4,12 @@ import com.google.gson.annotations.SerializedName;
 
 public class Forecast {
 
-    public String date;
+
     @SerializedName("astro")
     public Astrology astrology;
-    @SerializedName("tmp")
-    public Temperature temperature;
     @SerializedName("cond")
     public Condition condition;
+    public String date;
     @SerializedName("hum")
     public String humidity;
     @SerializedName("pcpn")
@@ -19,6 +18,8 @@ public class Forecast {
     public String rainProbability;
     @SerializedName("pres")
     public String atmosphericPressure;
+    @SerializedName("tmp")
+    public Temperature temperature;
     @SerializedName("uv")
     public String ultravioletRay;
     @SerializedName("vis")

@@ -10,4 +10,11 @@
     <style name="SplashTheme" parent="@android:style/Theme.NoTitleBar.Fullscreen">
 
     </style>
+
+    <style name="ForecastStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_marginTop">8dp</item>
+    </style>
 </resources>

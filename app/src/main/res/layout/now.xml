@@ -1,25 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="15dp">
+    android:layout_height="530dp"
+    android:layout_margin="15dp"
+   >
 
     <TextView
-        android:id="@+id/degree_text"
+        android:id="@+id/now_degree_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:textColor="#fff"
-        android:textSize="60sp" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
+        android:text="18℃"
+        android:textColor="#FFF300"
+        android:textSize="60sp"/>
 
     <TextView
-        android:id="@+id/weather_info_text"
+        android:id="@+id/now_weather_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
+        android:layout_toRightOf="@id/now_degree_text"
+        android:layout_alignBottom="@id/now_degree_text"
+        android:layout_marginLeft="15dp"
+        android:text="晴"
+        android:textColor="#FFF300"
+        android:textSize="20sp"/>
+    <TextView
+        android:id="@+id/now_winddir_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="24dp"
+        android:text="东南风"
+        android:textColor="#FFF300"
+        android:textSize="20sp"/>
+    <TextView
+        android:id="@+id/now_windpower_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/now_winddir_text"
+        android:layout_alignBottom="@id/now_winddir_text"
+        android:layout_marginLeft="15dp"
+        android:text="3-4级"
+        android:textColor="#FFF300"
+        android:textSize="20sp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="上滑查看更多"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:textColor="#fff"
-        android:textSize="20sp" />
+        />
 
-</LinearLayout>
+</RelativeLayout>

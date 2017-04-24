@@ -20,6 +20,7 @@ public class Suggestion {
     public TravelIndex travelIndex;
     @SerializedName("uv")
     public UltravioletRayIndex ultravioletRayIndex;
+
     public class AirIndex {
         @SerializedName("brf")
         public String level;
