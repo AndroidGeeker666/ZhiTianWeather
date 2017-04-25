@@ -123,8 +123,14 @@ public class WeatherActivity extends AppCompatActivity {
         ButterKnife.inject(this);
         initView();
         initListener();
-        Intent intent = new Intent(this, AutoUpdateService.class);
+        Intent intent = new Intent(WeatherActivity.this, AutoUpdateService.class);
         startService(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Toast.makeText(WeatherActivity.this, "WeatherActivity1:onDestroy()", Toast.LENGTH_SHORT).show();
     }
 
     //使状态栏透明
@@ -145,24 +151,30 @@ public class WeatherActivity extends AppCompatActivity {
         } else {            //本地没有缓存的必应图片，则从网络请求
             loadBingPic();
         }
-        String weatherStr = prefs.getString("weather", null);
+        String searchWeatherId = getIntent().getStringExtra("searchWeatherId");
+        if (searchWeatherId != null) {
+            requesWeather(searchWeatherId);
 
-        if (weatherStr != null) {   //本地有天气缓存数据，则优先显示缓存数据
-            Weather weather = HandleJsonUtil.handleWeatherResponse(weatherStr);
-            if (weather != null) {
-                mWeatherId = weather.basic.weatherId;
-                showWeatherInfo(weather);
+        }else{
+            String weatherStr = prefs.getString("weather", null);
+            if (weatherStr != null) {   //本地有天气缓存数据，则优先显示缓存数据
+                Weather weather = HandleJsonUtil.handleWeatherResponse(weatherStr);
+                if (weather != null) {
+                    mWeatherId = weather.basic.weatherId;
+                    showWeatherInfo(weather);
+                }
+            } else {                    //本地没有天气缓存数据，则从网络请求数据
+                mWeatherId = getIntent().getStringExtra("weather_id");
+                weatherLayout.setVisibility(View.INVISIBLE);
+                requesWeather(mWeatherId);
             }
-        } else {                    //本地没有天气缓存数据，则从网络请求数据
-            mWeatherId = getIntent().getStringExtra("weather_id");
-            weatherLayout.setVisibility(View.INVISIBLE);
-            requesWeather(mWeatherId);
         }
+
     }
 
     /*
-    加载必应每日一图
-     */
+        加载必应每日一图
+         */
     private void loadBingPic() {
         OkHttpUtil.getInstance().getAsync(Url.BINGPIC_URL, new JsonRequestCallback() {
             @Override
@@ -194,7 +206,6 @@ public class WeatherActivity extends AppCompatActivity {
      */
     public void requesWeather(String weatherId) {
         String weatherUrl = Url.WEATHER_Url + "?cityid=" + weatherId + "&key=" + Url.APP_KEY;
-
         OkHttpUtil.getInstance().getAsync(weatherUrl, new JsonRequestCallback() {
             @Override
             public void onRequestSucess(String result) {
@@ -313,4 +324,6 @@ public class WeatherActivity extends AppCompatActivity {
     public void onClick() {
         drawerLayout.openDrawer(GravityCompat.START);
     }
+
+
 }

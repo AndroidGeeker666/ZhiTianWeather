@@ -78,6 +78,7 @@ public class ChooseAreaFragment extends Fragment {
      */
     private int currentLevel;
     private ProgressDialog progressDialog;
+    private Button searchButton;
 
     @Nullable
     @Override
@@ -85,6 +86,7 @@ public class ChooseAreaFragment extends Fragment {
         View view = inflater.inflate(R.layout.choose_area, container, false);
         titleText = (TextView) view.findViewById(R.id.title_text);
         backButton = (Button) view.findViewById(R.id.back_button);
+        searchButton = (Button) view.findViewById(R.id.search_city);
         listView = (ListView) view.findViewById(R.id.list_view);
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, dataList);
         listView.setAdapter(adapter);
@@ -130,7 +132,23 @@ public class ChooseAreaFragment extends Fragment {
                 }
             }
         });
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                if (getActivity() instanceof MainActivity) {
+                    Intent intent = new Intent(getActivity(), SearchActivity.class);
+                    getActivity().startActivity(intent);
+                    getActivity().finish();
+                } else if (getActivity() instanceof WeatherActivity) {
+                    WeatherActivity activity = (WeatherActivity) getActivity();
+                    Intent intent = new Intent(activity, SearchActivity.class);
+                    activity.startActivity(intent);
+                    //activity.drawerLayout.closeDrawers();
+                    activity.finish();
+                }
+            }
+        });
     }
 
     /**

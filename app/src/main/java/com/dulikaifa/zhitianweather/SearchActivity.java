@@ -1,0 +1,82 @@
+package com.dulikaifa.zhitianweather;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.dulikaifa.zhitianweather.http.JsonRequestCallback;
+import com.dulikaifa.zhitianweather.http.OkHttpUtil;
+import com.dulikaifa.zhitianweather.http.Url;
+import com.orhanobut.logger.Logger;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
+
+/**
+ * Author:李晓峰 on 2017/4/24 23:51
+ * E-mail:chaate@163.com
+ * Copyright(c)2017,All rights reserved.
+ * Usage :
+ */
+public class SearchActivity extends AppCompatActivity {
+    public static final int SEACHER_REQUEST_CODE = 100;
+    @InjectView(R.id.edit_search)
+    EditText editSearch;
+    @InjectView(R.id.btn_search)
+    Button btnSearch;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_search);
+        ButterKnife.inject(this);
+
+    }
+
+    @OnClick(R.id.btn_search)
+    public void onClick() {
+        String cityName = editSearch.getText().toString().trim();
+        String searchCityUrl = Url.SEARCH_CITY_URL + "?city=" + cityName + "&key=" + Url.APP_KEY;
+        searchCityWeacherId(searchCityUrl);
+
+    }
+
+    private void searchCityWeacherId(String searchCityUrl) {
+        OkHttpUtil.getInstance().getAsync(searchCityUrl, new JsonRequestCallback() {
+            @Override
+            public void onRequestSucess(String result) {
+                Logger.d("请求的城市结果",result);
+                try {
+                    JSONArray jsonArray = new JSONArray(result);
+
+                    if (jsonArray.length()==0) {
+                        Toast.makeText(SearchActivity.this, "搜索的城市不存在" + "\n" + "或者不在服务范围", Toast.LENGTH_SHORT).show();
+                    } else {
+                        JSONObject jsonObject = jsonArray.getJSONObject(0);
+                        String searchWeatherId = jsonObject.getString("weather_id");
+                        Intent intent = new Intent(SearchActivity.this, WeatherActivity.class);
+                        intent.putExtra("searchWeatherId", searchWeatherId);
+                        SearchActivity.this.startActivity(intent);
+                        SearchActivity.this.finish();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onRequestFailure(String result) {
+                Toast.makeText(SearchActivity.this, "获取城市信息失败,失败原因是：" + result, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+}
