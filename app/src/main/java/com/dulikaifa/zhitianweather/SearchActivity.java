@@ -10,7 +10,6 @@ import android.widget.Toast;
 import com.dulikaifa.zhitianweather.http.JsonRequestCallback;
 import com.dulikaifa.zhitianweather.http.OkHttpUtil;
 import com.dulikaifa.zhitianweather.http.Url;
-import com.orhanobut.logger.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,7 +26,6 @@ import butterknife.OnClick;
  * Usage :
  */
 public class SearchActivity extends AppCompatActivity {
-    public static final int SEACHER_REQUEST_CODE = 100;
     @InjectView(R.id.edit_search)
     EditText editSearch;
     @InjectView(R.id.btn_search)
@@ -53,19 +51,20 @@ public class SearchActivity extends AppCompatActivity {
         OkHttpUtil.getInstance().getAsync(searchCityUrl, new JsonRequestCallback() {
             @Override
             public void onRequestSucess(String result) {
-                Logger.d("请求的城市结果",result);
-                try {
-                    JSONArray jsonArray = new JSONArray(result);
 
-                    if (jsonArray.length()==0) {
-                        Toast.makeText(SearchActivity.this, "搜索的城市不存在" + "\n" + "或者不在服务范围", Toast.LENGTH_SHORT).show();
-                    } else {
-                        JSONObject jsonObject = jsonArray.getJSONObject(0);
-                        String searchWeatherId = jsonObject.getString("weather_id");
+                try {
+                    JSONObject jsonObject= new JSONObject(result);
+                    JSONArray heWeather5 = jsonObject.getJSONArray("HeWeather5");
+
+                    if("ok".equals(heWeather5.getJSONObject(0).getString("status"))){
+                        String searchWeatherId = heWeather5.getJSONObject(0).getString("id");
                         Intent intent = new Intent(SearchActivity.this, WeatherActivity.class);
                         intent.putExtra("searchWeatherId", searchWeatherId);
                         SearchActivity.this.startActivity(intent);
                         SearchActivity.this.finish();
+
+                    }else{
+                        Toast.makeText(SearchActivity.this, "搜索的城市不存在" + "\n" + "或者不在服务范围", Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

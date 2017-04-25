@@ -130,7 +130,7 @@ public class WeatherActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Toast.makeText(WeatherActivity.this, "WeatherActivity1:onDestroy()", Toast.LENGTH_SHORT).show();
+        
     }
 
     //使状态栏透明
@@ -205,7 +205,7 @@ public class WeatherActivity extends AppCompatActivity {
      * 根据天气id请求城市天气信息。
      */
     public void requesWeather(String weatherId) {
-        String weatherUrl = Url.WEATHER_Url + "?cityid=" + weatherId + "&key=" + Url.APP_KEY;
+        String weatherUrl = Url.WEATHER_Url + "?city=" + weatherId + "&key=" + Url.APP_KEY;
         OkHttpUtil.getInstance().getAsync(weatherUrl, new JsonRequestCallback() {
             @Override
             public void onRequestSucess(String result) {
