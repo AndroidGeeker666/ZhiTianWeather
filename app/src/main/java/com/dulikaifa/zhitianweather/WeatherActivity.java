@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,7 +41,18 @@ import butterknife.OnClick;
  */
 
 public class WeatherActivity extends AppCompatActivity {
-
+    @InjectView(R.id.aqi_layout)
+    LinearLayout aqiLayout;
+    @InjectView(R.id.suggestion_layout)
+    LinearLayout suggestionLayout;
+    @InjectView(R.id.forecast_layout)
+    LinearLayout forecastLayout;
+    @InjectView(R.id.now_layout)
+    RelativeLayout nowLayout;
+    @InjectView(R.id.basic_layout)
+    LinearLayout basicLayout;
+    @InjectView(R.id.forecast_all_layout)
+    LinearLayout forecastAllLayout;
     @InjectView(R.id.bing_pic_img)
     ImageView bingPicImg;
     @InjectView(R.id.nav_button)
@@ -57,8 +69,6 @@ public class WeatherActivity extends AppCompatActivity {
     TextView nowWinddirText;
     @InjectView(R.id.now_windpower_text)
     TextView nowWindpowerText;
-    @InjectView(R.id.forecast_layout)
-    LinearLayout forecastLayout;
     @InjectView(R.id.air_text)
     TextView airText;
     @InjectView(R.id.aqi_text)
@@ -113,24 +123,46 @@ public class WeatherActivity extends AppCompatActivity {
     TextView travelInfo;
     @InjectView(R.id.ultraviolet_suggestion_info)
     TextView ultravioletSuggestionInfo;
-    private String mWeatherId;
+    private String mWeatherId = "CN101010100";
+    public String mCountryName = "中国";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        if(savedInstanceState!=null){
+            mWeatherId= (String) savedInstanceState.get("weather_id");
+            mCountryName= (String) savedInstanceState.get("countryName");
+        }
         super.onCreate(savedInstanceState);
         transparentStatusBar();
         setContentView(R.layout.activity_weather);
         ButterKnife.inject(this);
         initView();
         initListener();
-        Intent intent = new Intent(WeatherActivity.this, AutoUpdateService.class);
-        startService(intent);
+
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        if(savedInstanceState!=null){
+            mWeatherId= (String) savedInstanceState.get("weather_id");
+            mCountryName= (String) savedInstanceState.get("countryName");
+
+        }
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        outState.putString("weather_id", mWeatherId);
+        outState.putString("countryName", mCountryName);
+        super.onSaveInstanceState(outState);
+
+
+    }
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        
+
     }
 
     //使状态栏透明
@@ -152,29 +184,48 @@ public class WeatherActivity extends AppCompatActivity {
             loadBingPic();
         }
         String searchWeatherId = getIntent().getStringExtra("searchWeatherId");
-        if (searchWeatherId != null) {
-            requesWeather(searchWeatherId);
 
-        }else{
-            String weatherStr = prefs.getString("weather", null);
-            if (weatherStr != null) {   //本地有天气缓存数据，则优先显示缓存数据
+        if (searchWeatherId != null) {
+            String searchCountryName = getIntent().getStringExtra("searchCountryName");
+            requesWeather(searchWeatherId, searchCountryName);
+
+        } else {
+            String weatherStr = prefs.getString("json", null);
+            String countryName = prefs.getString("countryName", null);
+            if (weatherStr != null && countryName != null) {   //本地有天气缓存数据，则优先显示缓存数据
+                mCountryName = countryName;
                 Weather weather = HandleJsonUtil.handleWeatherResponse(weatherStr);
-                if (weather != null) {
+                if (weather != null&&"ok".equals(weather.status)) {
+                    if (countryName.equals("中国")) {
+                        showAllInfo(weather);
+                        weatherLayout.setVisibility(View.VISIBLE);
+                    } else {
+                        showCommonInfo(weather);
+                        basicLayout.setVisibility(View.VISIBLE);
+                        nowLayout.setVisibility(View.VISIBLE);
+                        forecastAllLayout.setVisibility(View.VISIBLE);
+                        aqiLayout.setVisibility(View.GONE);
+                        suggestionLayout.setVisibility(View.GONE);
+                    }
                     mWeatherId = weather.basic.weatherId;
-                    showWeatherInfo(weather);
+                    Intent intent = new Intent(WeatherActivity.this, AutoUpdateService.class);
+                    startService(intent);
+                }else{
+                    Toast.makeText(WeatherActivity.this, "存取json发生错误，请检查！", Toast.LENGTH_SHORT).show();
+
                 }
+
             } else {                    //本地没有天气缓存数据，则从网络请求数据
                 mWeatherId = getIntent().getStringExtra("weather_id");
-                weatherLayout.setVisibility(View.INVISIBLE);
-                requesWeather(mWeatherId);
+                requesWeather(mWeatherId, mCountryName);
             }
         }
 
     }
 
     /*
-        加载必应每日一图
-         */
+      加载必应每日一图
+    */
     private void loadBingPic() {
         OkHttpUtil.getInstance().getAsync(Url.BINGPIC_URL, new JsonRequestCallback() {
             @Override
@@ -196,7 +247,7 @@ public class WeatherActivity extends AppCompatActivity {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                requesWeather(mWeatherId);
+                requesWeather(mWeatherId, mCountryName);
             }
         });
     }
@@ -204,7 +255,7 @@ public class WeatherActivity extends AppCompatActivity {
     /**
      * 根据天气id请求城市天气信息。
      */
-    public void requesWeather(String weatherId) {
+    public void requesWeather(String weatherId, final String countryName) {
         String weatherUrl = Url.WEATHER_Url + "?city=" + weatherId + "&key=" + Url.APP_KEY;
         OkHttpUtil.getInstance().getAsync(weatherUrl, new JsonRequestCallback() {
             @Override
@@ -213,14 +264,27 @@ public class WeatherActivity extends AppCompatActivity {
                 Weather weather = HandleJsonUtil.handleWeatherResponse(result);
                 if (weather != null && "ok".equals(weather.status)) {
                     SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
-                    editor.putString("weather", result);
-                    editor.apply();
+                    editor.putString("countryName", countryName);
+                    editor.putString("json", result);
+                    editor.commit();
+                    mCountryName = countryName;
                     mWeatherId = weather.basic.weatherId;
-                    showWeatherInfo(weather);
-                } else {
-                    Toast.makeText(WeatherActivity.this, "获取天气信息失败,请检查网络", Toast.LENGTH_SHORT).show();
+                    if (countryName.equals("中国")) {
+                        showAllInfo(weather);
+                        weatherLayout.setVisibility(View.VISIBLE);
+                    } else {
+                        showCommonInfo(weather);
+                        basicLayout.setVisibility(View.VISIBLE);
+                        nowLayout.setVisibility(View.VISIBLE);
+                        forecastAllLayout.setVisibility(View.VISIBLE);
+                        aqiLayout.setVisibility(View.GONE);
+                        suggestionLayout.setVisibility(View.GONE);
+                    }
+                    Intent intent = new Intent(WeatherActivity.this, AutoUpdateService.class);
+                    startService(intent);
+                }else{
+                    Toast.makeText(WeatherActivity.this, "搜索的城市不存在" + "\n" + "或者不在服务范围", Toast.LENGTH_SHORT).show();
                 }
-
             }
 
             @Override
@@ -232,59 +296,13 @@ public class WeatherActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * 显示天气信息
-     */
-    private void showWeatherInfo(Weather weather) {
-        basicCity.setText(weather.basic.cityName);
-        basicUpdatetime.setText(weather.basic.update.updateTime);
-        nowDegreeText.setText(weather.now.nowTemperature + "℃");
-        nowWeatherText.setText(weather.now.nowCondition.weather);
-        nowWinddirText.setText(weather.now.wind.nowWindDirection);
-        nowWindpowerText.setText(weather.now.wind.nowWindPower + "级");
-        forecastLayout.removeAllViews();
-        for (Forecast forecast : weather.forecastList) {
-            View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false);
-            TextView date = (TextView) view.findViewById(R.id.date);
-            TextView skyText = (TextView) view.findViewById(R.id.sky_text);
-            TextView tempText = (TextView) view.findViewById(R.id.temp_text);
-            TextView winddegText = (TextView) view.findViewById(R.id.winddeg_text);
-            TextView winddirText = (TextView) view.findViewById(R.id.winddir_text);
-            TextView windpowerText = (TextView) view.findViewById(R.id.windpower_text);
-            TextView windspeedText = (TextView) view.findViewById(R.id.windspeed_text);
-            TextView humidityText = (TextView) view.findViewById(R.id.humidity_text);
-            TextView rainProbabilityText = (TextView) view.findViewById(R.id.rainProbability_text);
-            TextView rainAmoutText = (TextView) view.findViewById(R.id.rainAmout_text);
-            TextView atmosphericText = (TextView) view.findViewById(R.id.atmospheric_text);
-            TextView ultravioletText = (TextView) view.findViewById(R.id.ultraviolet_Ray_text);
-            TextView visibilityText = (TextView) view.findViewById(R.id.visibility_text);
-            TextView sunriseText = (TextView) view.findViewById(R.id.sunrise_text);
-            TextView sunsetText = (TextView) view.findViewById(R.id.sunset_text);
-            TextView moonriseText = (TextView) view.findViewById(R.id.moonrise_text);
-            TextView moonsetText = (TextView) view.findViewById(R.id.moonset_text);
-            date.setText(forecast.date);
-            if (forecast.condition.weatherDay.equals(forecast.condition.weatherNight)) {
-                skyText.setText(forecast.condition.weatherDay);
-            } else {
-                skyText.setText(forecast.condition.weatherDay + "转" + forecast.condition.weatherNight);
-            }
-            tempText.setText(forecast.temperature.min + "~" + forecast.temperature.max + "℃");
-            winddegText.setText(forecast.wind.windDegree + "°");
-            winddirText.setText(forecast.wind.windDirection);
-            windpowerText.setText(forecast.wind.windPower);
-            windspeedText.setText(forecast.wind.windSpeed + "kmph");
-            humidityText.setText(forecast.humidity + "%");
-            rainProbabilityText.setText(forecast.rainProbability);
-            rainAmoutText.setText(forecast.rainAmout + "mm");
-            atmosphericText.setText(forecast.atmosphericPressure + "兆帕");
-            ultravioletText.setText(forecast.ultravioletRay + "级");
-            visibilityText.setText(forecast.visibility + "km");
-            sunriseText.setText(forecast.astrology.sunrise);
-            sunsetText.setText(forecast.astrology.sunset);
-            moonriseText.setText(forecast.astrology.moonrise);
-            moonsetText.setText(forecast.astrology.moonset);
-            forecastLayout.addView(view);
-        }
+    private void showAllInfo(Weather weather) {
+        showCommonInfo(weather);
+        showPartInfo(weather);
+    }
+
+    private void showPartInfo(Weather weather) {
+
         if (weather.aqi != null) {
             airText.setText(weather.aqi.city.qlty);
             aqiText.setText(weather.aqi.city.aqi);
@@ -317,7 +335,64 @@ public class WeatherActivity extends AppCompatActivity {
             ultravioletSuggestionInfo.setText(weather.suggestion.ultravioletRayIndex.info);
 
         }
-        weatherLayout.setVisibility(View.VISIBLE);
+
+    }
+
+    /**
+     * 显示天气信息
+     */
+    private void showCommonInfo(Weather weather) {
+        if (weather != null) {
+            basicCity.setText(weather.basic.cityName);
+            basicUpdatetime.setText(weather.basic.update.updateTime);
+            nowDegreeText.setText(weather.now.nowTemperature + "℃");
+            nowWeatherText.setText(weather.now.nowCondition.weather);
+            nowWinddirText.setText(weather.now.wind.nowWindDirection);
+            nowWindpowerText.setText(weather.now.wind.nowWindPower + "级");
+            forecastLayout.removeAllViews();
+            for (Forecast forecast : weather.forecastList) {
+                View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false);
+                TextView date = (TextView) view.findViewById(R.id.date);
+                TextView skyText = (TextView) view.findViewById(R.id.sky_text);
+                TextView tempText = (TextView) view.findViewById(R.id.temp_text);
+                TextView winddegText = (TextView) view.findViewById(R.id.winddeg_text);
+                TextView winddirText = (TextView) view.findViewById(R.id.winddir_text);
+                TextView windpowerText = (TextView) view.findViewById(R.id.windpower_text);
+                TextView windspeedText = (TextView) view.findViewById(R.id.windspeed_text);
+                TextView humidityText = (TextView) view.findViewById(R.id.humidity_text);
+                TextView rainProbabilityText = (TextView) view.findViewById(R.id.rainProbability_text);
+                TextView rainAmoutText = (TextView) view.findViewById(R.id.rainAmout_text);
+                TextView atmosphericText = (TextView) view.findViewById(R.id.atmospheric_text);
+                TextView ultravioletText = (TextView) view.findViewById(R.id.ultraviolet_Ray_text);
+                TextView visibilityText = (TextView) view.findViewById(R.id.visibility_text);
+                TextView sunriseText = (TextView) view.findViewById(R.id.sunrise_text);
+                TextView sunsetText = (TextView) view.findViewById(R.id.sunset_text);
+                TextView moonriseText = (TextView) view.findViewById(R.id.moonrise_text);
+                TextView moonsetText = (TextView) view.findViewById(R.id.moonset_text);
+                date.setText(forecast.date);
+                if (forecast.condition.weatherDay.equals(forecast.condition.weatherNight)) {
+                    skyText.setText(forecast.condition.weatherDay);
+                } else {
+                    skyText.setText(forecast.condition.weatherDay + "转" + forecast.condition.weatherNight);
+                }
+                tempText.setText(forecast.temperature.min + "~" + forecast.temperature.max + "℃");
+                winddegText.setText(forecast.wind.windDegree + "°");
+                winddirText.setText(forecast.wind.windDirection);
+                windpowerText.setText(forecast.wind.windPower);
+                windspeedText.setText(forecast.wind.windSpeed + "kmph");
+                humidityText.setText(forecast.humidity + "%");
+                rainProbabilityText.setText(forecast.rainProbability);
+                rainAmoutText.setText(forecast.rainAmout + "mm");
+                atmosphericText.setText(forecast.atmosphericPressure + "兆帕");
+                ultravioletText.setText(forecast.ultravioletRay + "级");
+                visibilityText.setText(forecast.visibility + "km");
+                sunriseText.setText(forecast.astrology.sunrise);
+                sunsetText.setText(forecast.astrology.sunset);
+                moonriseText.setText(forecast.astrology.moonrise);
+                moonsetText.setText(forecast.astrology.moonset);
+                forecastLayout.addView(view);
+            }
+        }
     }
 
     @OnClick(R.id.nav_button)

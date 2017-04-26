@@ -57,8 +57,10 @@ public class SearchActivity extends AppCompatActivity {
                     JSONArray heWeather5 = jsonObject.getJSONArray("HeWeather5");
 
                     if("ok".equals(heWeather5.getJSONObject(0).getString("status"))){
-                        String searchWeatherId = heWeather5.getJSONObject(0).getString("id");
+                        String searchWeatherId = heWeather5.getJSONObject(0).getJSONObject("basic").getString("id");
+                        String searchCountryName = heWeather5.getJSONObject(0).getJSONObject("basic").getString("cnty");
                         Intent intent = new Intent(SearchActivity.this, WeatherActivity.class);
+                        intent.putExtra("searchCountryName",searchCountryName);
                         intent.putExtra("searchWeatherId", searchWeatherId);
                         SearchActivity.this.startActivity(intent);
                         SearchActivity.this.finish();

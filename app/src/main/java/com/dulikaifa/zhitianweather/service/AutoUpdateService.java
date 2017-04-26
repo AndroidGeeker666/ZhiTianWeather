@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
 import com.dulikaifa.zhitianweather.bean.Weather;
 import com.dulikaifa.zhitianweather.http.JsonRequestCallback;
@@ -56,34 +57,34 @@ public class AutoUpdateService extends Service {
 
             @Override
             public void onRequestFailure(String result) {
-
+                Toast.makeText(AutoUpdateService.this, "后台服务获取必应图片失败！失败原因：" + result, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void updateWeather() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String weatherString = prefs.getString("weather", null);
+        String weatherString = prefs.getString("json", null);
         if (weatherString != null) {
             Weather weather = HandleJsonUtil.handleWeatherResponse(weatherString);
-            String weatherId = weather.basic.weatherId;
-            String weatherUrl = Url.WEATHER_Url + "?cityid=" + weatherId + "&key=" + Url.APP_KEY;
+            if (weather != null) {
+                String weatherId = weather.basic.weatherId;
+                String weatherUrl = Url.WEATHER_Url + "?city=" + weatherId + "&key=" + Url.APP_KEY;
 
-            OkHttpUtil.getInstance().getAsync(weatherUrl, new JsonRequestCallback() {
-                @Override
-                public void onRequestSucess(String result) {
+                OkHttpUtil.getInstance().getAsync(weatherUrl, new JsonRequestCallback() {
+                    @Override
+                    public void onRequestSucess(String result) {
 
-                    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(AutoUpdateService.this).edit();
-                    editor.putString("weather", result);
-                    editor.apply();
-                }
-
-                @Override
-                public void onRequestFailure(String result) {
-
-                }
-            });
+                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(AutoUpdateService.this).edit();
+                        editor.putString("json", result);
+                        editor.apply();
+                    }
+                    @Override
+                    public void onRequestFailure(String result) {
+                        Toast.makeText(AutoUpdateService.this, "后台服务更新天气失败！失败原因：" + result, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
         }
-
     }
 }
