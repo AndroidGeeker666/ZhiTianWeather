@@ -79,6 +79,7 @@ public class ChooseAreaFragment extends Fragment {
     private int currentLevel;
     private ProgressDialog progressDialog;
     private Button searchButton;
+    private Button setting;
 
     @Nullable
     @Override
@@ -87,7 +88,9 @@ public class ChooseAreaFragment extends Fragment {
         titleText = (TextView) view.findViewById(R.id.title_text);
         backButton = (Button) view.findViewById(R.id.back_button);
         searchButton = (Button) view.findViewById(R.id.search_city);
+        setting = (Button) view.findViewById(R.id.setting);
         listView = (ListView) view.findViewById(R.id.list_view);
+        listView.setVerticalScrollBarEnabled(false);
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, dataList);
         listView.setAdapter(adapter);
         return view;
@@ -147,6 +150,14 @@ public class ChooseAreaFragment extends Fragment {
                     //activity.drawerLayout.closeDrawers();
                     activity.finish();
                 }
+            }
+        });
+        setting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), SettingActivity.class);
+                getActivity().startActivity(intent);
+
             }
         });
     }

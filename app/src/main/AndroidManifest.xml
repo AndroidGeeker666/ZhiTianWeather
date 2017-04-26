@@ -20,9 +20,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity"/>
-        <activity android:name=".WeatherActivity"
-
-            />
+        <activity android:name=".WeatherActivity"/>
+        <activity android:name=".AboutActivity"/>
+        <activity android:name=".SettingActivity"/>
         <activity android:name=".SearchActivity"/>
         <service android:name=".service.AutoUpdateService"/>
     </application>

@@ -3,6 +3,7 @@ package com.dulikaifa.zhitianweather;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -42,9 +43,13 @@ public class SearchActivity extends AppCompatActivity {
     @OnClick(R.id.btn_search)
     public void onClick() {
         String cityName = editSearch.getText().toString().trim();
-        String searchCityUrl = Url.SEARCH_CITY_URL + "?city=" + cityName + "&key=" + Url.APP_KEY;
-        searchCityWeacherId(searchCityUrl);
+        if(TextUtils.isEmpty(cityName)){
+            Toast.makeText(SearchActivity.this, "城市名字不能为空，请重新输入", Toast.LENGTH_SHORT).show();
 
+        }else{
+            String searchCityUrl = Url.SEARCH_CITY_URL + "?city=" + cityName + "&key=" + Url.APP_KEY;
+            searchCityWeacherId(searchCityUrl);
+        }
     }
 
     private void searchCityWeacherId(String searchCityUrl) {

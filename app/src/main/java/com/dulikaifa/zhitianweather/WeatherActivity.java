@@ -33,6 +33,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
+import static android.view.View.VISIBLE;
+
 /**
  * Author:李晓峰 on 2017/4/22 22:14
  * E-mail:chaate@163.com
@@ -198,14 +200,18 @@ public class WeatherActivity extends AppCompatActivity {
                 if (weather != null&&"ok".equals(weather.status)) {
                     if (countryName.equals("中国")) {
                         showAllInfo(weather);
-                        weatherLayout.setVisibility(View.VISIBLE);
+                        basicLayout.setVisibility(VISIBLE);
+                        nowLayout.setVisibility(VISIBLE);
+                        forecastAllLayout.setVisibility(VISIBLE);
+                        aqiLayout.setVisibility(VISIBLE);
+                        suggestionLayout.setVisibility(VISIBLE);
                     } else {
                         showCommonInfo(weather);
-                        basicLayout.setVisibility(View.VISIBLE);
-                        nowLayout.setVisibility(View.VISIBLE);
-                        forecastAllLayout.setVisibility(View.VISIBLE);
-                        aqiLayout.setVisibility(View.GONE);
-                        suggestionLayout.setVisibility(View.GONE);
+                        basicLayout.setVisibility(VISIBLE);
+                        nowLayout.setVisibility(VISIBLE);
+                        forecastAllLayout.setVisibility(VISIBLE);
+                        aqiLayout.setVisibility(View.INVISIBLE);
+                        suggestionLayout.setVisibility(View.INVISIBLE);
                     }
                     mWeatherId = weather.basic.weatherId;
                     Intent intent = new Intent(WeatherActivity.this, AutoUpdateService.class);
@@ -272,11 +278,16 @@ public class WeatherActivity extends AppCompatActivity {
                     if (countryName.equals("中国")) {
                         showAllInfo(weather);
                         weatherLayout.setVisibility(View.VISIBLE);
+                        basicLayout.setVisibility(VISIBLE);
+                        nowLayout.setVisibility(VISIBLE);
+                        forecastAllLayout.setVisibility(VISIBLE);
+                        aqiLayout.setVisibility(VISIBLE);
+                        suggestionLayout.setVisibility(VISIBLE);
                     } else {
                         showCommonInfo(weather);
-                        basicLayout.setVisibility(View.VISIBLE);
-                        nowLayout.setVisibility(View.VISIBLE);
-                        forecastAllLayout.setVisibility(View.VISIBLE);
+                        basicLayout.setVisibility(VISIBLE);
+                        nowLayout.setVisibility(VISIBLE);
+                        forecastAllLayout.setVisibility(VISIBLE);
                         aqiLayout.setVisibility(View.GONE);
                         suggestionLayout.setVisibility(View.GONE);
                     }
