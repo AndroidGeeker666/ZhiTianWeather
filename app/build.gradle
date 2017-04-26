@@ -1,14 +1,6 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        config {
-            keyAlias 'GoogleMarketsKey'
-            keyPassword '489583028'
-            storeFile file('D:/appkeys/appkey.jks')
-            storePassword '489583028'
-        }
-    }
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
     defaultConfig {
@@ -25,7 +17,7 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             zipAlignEnabled true
-            signingConfig signingConfigs.config
+
         }
         debug {
             minifyEnabled false
