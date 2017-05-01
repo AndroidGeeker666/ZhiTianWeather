@@ -2,14 +2,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:background="#D8F5F3"
               android:orientation="vertical"
-              android:background="#8000"
-              android:padding="15dp"
-    >
 
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#0FC7B8">
+
+        <Button
+            android:id="@+id/btn_back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:background="@mipmap/ic_back"/>
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="关于"
+            android:textColor="#fff"
+            android:textSize="22sp"/>
+
+    </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="200dp"
+        android:background="#fff"
         android:orientation="horizontal"
         >
 
@@ -19,29 +43,36 @@
             android:layout_centerInParent="true"
             android:background="@mipmap/logo"
             />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:gravity="center_vertical"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
+            android:gravity="center_vertical"
             android:text="知天天气 v1.5"
-            android:textColor="#fff"
+            android:textColor="#000"
             android:textSize="18sp"/>
     </RelativeLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#fff"
         android:orientation="horizontal"
+        android:padding="15dp"
         >
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:text="       知天天气是一款简洁而实用的天气预报app，支持全球5万多城市未来3天的天气预报，包括32项预报数据，数据精准，体积小巧，不占内存，非常好用。"
-            android:textColor="#fff"
+            android:text="       知天天气是一款简洁而实用的天气预报app，支持全球5万多城市未来3天的天气预报，包括32项预报数据，数据精准，体积小巧，占用内存极低，非常好用。"
+            android:textColor="#000"
             android:textSize="22sp"/>
 
     </RelativeLayout>

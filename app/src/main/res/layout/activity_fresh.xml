@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:id="@+id/location_layout"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="#D8F5F3"
+    >
+    <Button
+        android:id="@+id/location_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="#0FC7B8"
+        android:text="点击重新定位"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        />
+</FrameLayout>

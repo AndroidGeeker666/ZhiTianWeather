@@ -23,10 +23,7 @@
 
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/white"/>
+    <View style="@style/LineStyle"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -76,10 +73,7 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/white"/>
+    <View style="@style/LineStyle"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -129,10 +123,7 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/white"/>
+    <View style="@style/LineStyle"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -182,10 +173,7 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/white"/>
+    <View style="@style/LineStyle"/>
 
     <LinearLayout
         android:layout_width="match_parent"

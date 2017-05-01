@@ -1,8 +1,9 @@
 package com.dulikaifa.zhitianweather;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import com.dulikaifa.zhitianweather.db.City;
 import com.dulikaifa.zhitianweather.db.County;
 import com.dulikaifa.zhitianweather.db.Province;
 import com.dulikaifa.zhitianweather.http.JsonRequestCallback;
+import com.dulikaifa.zhitianweather.http.NetStatusUtil;
 import com.dulikaifa.zhitianweather.http.OkHttpUtil;
 import com.dulikaifa.zhitianweather.http.Url;
 import com.dulikaifa.zhitianweather.util.HandleJsonUtil;
@@ -27,6 +29,8 @@ import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Author:李晓峰 on 2017/4/22 22:16
@@ -77,18 +81,16 @@ public class ChooseAreaFragment extends Fragment {
      * 当前选中的级别
      */
     private int currentLevel;
-    private ProgressDialog progressDialog;
-    private Button searchButton;
-    private Button setting;
+    private TextView setting;
+    private SweetAlertDialog pDialog;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.choose_area, container, false);
-        titleText = (TextView) view.findViewById(R.id.title_text);
-        backButton = (Button) view.findViewById(R.id.back_button);
-        searchButton = (Button) view.findViewById(R.id.search_city);
-        setting = (Button) view.findViewById(R.id.setting);
+        titleText = (TextView) view.findViewById(R.id.select_city);
+        backButton = (Button) view.findViewById(R.id.btn_back4);
+        setting = (TextView) view.findViewById(R.id.setting);
         listView = (ListView) view.findViewById(R.id.list_view);
         listView.setVerticalScrollBarEnabled(false);
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, dataList);
@@ -99,7 +101,11 @@ public class ChooseAreaFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        initLstener();
         queryAndShowProvinces();
+    }
+
+    private void initLstener() {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -111,15 +117,17 @@ public class ChooseAreaFragment extends Fragment {
                     queryAndShowCounties();
                 } else if (currentLevel == LEVEL_COUNTY) {
                     String weatherId = countyList.get(position).getWeatherId();
+                    String countyName = countyList.get(position).getCountyName();
                     if (getActivity() instanceof MainActivity) {
                         Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        intent.putExtra("countyName", countyName);
                         intent.putExtra("weather_id", weatherId);
                         startActivity(intent);
                         getActivity().finish();
                     } else if (getActivity() instanceof WeatherActivity) {
                         WeatherActivity activity = (WeatherActivity) getActivity();
                         activity.drawerLayout.closeDrawers();
-                        activity.requesWeather(weatherId,activity.mCountryName);
+                        activity.requesWeather(weatherId, activity.mCountryName);
 
                     }
                 }
@@ -135,23 +143,7 @@ public class ChooseAreaFragment extends Fragment {
                 }
             }
         });
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                if (getActivity() instanceof MainActivity) {
-                    Intent intent = new Intent(getActivity(), SearchActivity.class);
-                    getActivity().startActivity(intent);
-                    getActivity().finish();
-                } else if (getActivity() instanceof WeatherActivity) {
-                    WeatherActivity activity = (WeatherActivity) getActivity();
-                    Intent intent = new Intent(activity, SearchActivity.class);
-                    activity.startActivity(intent);
-                    //activity.drawerLayout.closeDrawers();
-                    activity.finish();
-                }
-            }
-        });
         setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -167,6 +159,14 @@ public class ChooseAreaFragment extends Fragment {
      */
     private void queryAndShowProvinces() {
         titleText.setText("中国");
+        setting.setText("设置");
+        setting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), SettingActivity.class);
+                getActivity().startActivity(intent);
+            }
+        });
         backButton.setVisibility(View.GONE);
         provinceList = DataSupport.findAll(Province.class);
         if (provinceList.size() > 0 && provinceList != null) {
@@ -174,9 +174,11 @@ public class ChooseAreaFragment extends Fragment {
             for (Province province : provinceList) {
                 dataList.add(province.getProvinceName());
             }
+
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
             currentLevel = LEVEL_PROVINCE;
+
         } else {
             queryFromServer(Url.PROVINCE_URL, "province");
         }
@@ -231,57 +233,66 @@ public class ChooseAreaFragment extends Fragment {
      * 根据传入的地址和类型从服务器上查询省市县数据。
      */
     private void queryFromServer(String url, final String type) {
-        showProgressDialog();
-        OkHttpUtil.getInstance().getAsync(url, new JsonRequestCallback() {
-            @Override
-            public void onRequestSucess(String result) {
-                closeProgressDialog();
-                boolean isHandleSuccess = false;
-                if ("province".equals(type)) {
-                    isHandleSuccess = HandleJsonUtil.handleProvinceResponse(result);
-                } else if ("city".equals(type)) {
-                    isHandleSuccess = HandleJsonUtil.handleCityResponse(result, selectedProvince.getId());
-                } else if ("county".equals(type)) {
-                    isHandleSuccess = HandleJsonUtil.handleCountyResponse(result, selectedCity.getId());
-                }
-                if (isHandleSuccess) {
+        if (NetStatusUtil.isNetworkAvailable(getActivity())) {
+            pDialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
+            pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+            pDialog.setTitleText("加载中...");
+            pDialog.setCancelable(false);
+            pDialog.show();
+            OkHttpUtil.getInstance().getAsync(url, new JsonRequestCallback() {
+                @Override
+                public void onRequestSucess(String result) {
+
+                    boolean isHandleSuccess = false;
                     if ("province".equals(type)) {
-                        queryAndShowProvinces();
+                        isHandleSuccess = HandleJsonUtil.handleProvinceResponse(result);
                     } else if ("city".equals(type)) {
-                        queryAndShowCities();
+                        isHandleSuccess = HandleJsonUtil.handleCityResponse(result, selectedProvince.getId());
                     } else if ("county".equals(type)) {
-                        queryAndShowCounties();
+                        isHandleSuccess = HandleJsonUtil.handleCountyResponse(result, selectedCity.getId());
                     }
+                    if (isHandleSuccess) {
+                        if ("province".equals(type)) {
+                            queryAndShowProvinces();
+                        } else if ("city".equals(type)) {
+                            queryAndShowCities();
+                        } else if ("county".equals(type)) {
+                            queryAndShowCounties();
+                        }
+                    }
+                    pDialog.dismiss();
                 }
-            }
 
-            @Override
-            public void onRequestFailure(String result) {
-                closeProgressDialog();
-                Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+                @Override
+                public void onRequestFailure(String result) {
+                    pDialog.dismiss();
+                    Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            SweetAlertDialog pDialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.WARNING_TYPE)
+                    .setTitleText("网络未连接")
+                    .setContentText("请检查网络设置")
+                    .setConfirmText("我知道了,去设置网络")
+                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                            startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
+                            sweetAlertDialog.dismissWithAnimation();
+                        }
+                    });
+            pDialog.setCancelable(false);
+            pDialog.show();
 
-    /**
-     * 显示进度对话框
-     */
-    private void showProgressDialog() {
-        if (progressDialog == null) {
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setMessage("正在加载...");
-            progressDialog.setCanceledOnTouchOutside(false);
+            setting.setText("刷新");
+            setting.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MainActivity activity = (MainActivity) getActivity();
+                    activity.startLocation();
+                    queryAndShowProvinces();
+                }
+            });
         }
-        progressDialog.show();
     }
-
-    /**
-     * 关闭进度对话框
-     */
-    private void closeProgressDialog() {
-        if (progressDialog != null) {
-            progressDialog.dismiss();
-        }
-    }
-
 }

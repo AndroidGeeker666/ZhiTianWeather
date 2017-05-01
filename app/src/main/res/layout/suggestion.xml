@@ -21,10 +21,7 @@
             android:textSize="24sp"
             />
     </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/white"/>
+    <View style="@style/LineStyle"/>
     <!--空气污染指数-->
     <RelativeLayout
         android:layout_width="match_parent"
@@ -65,10 +62,7 @@
             android:textSize="14sp"
             />
     </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/white"/>
+    <View style="@style/LineStyle"/>
     <!--舒适度染指数-->
     <RelativeLayout
         android:layout_width="match_parent"
@@ -109,10 +103,7 @@
             android:textSize="14sp"
             />
     </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/white"/>
+    <View style="@style/LineStyle"/>
     <!--洗车指数-->
     <RelativeLayout
         android:layout_width="match_parent"
@@ -153,10 +144,7 @@
             android:textSize="14sp"
             />
     </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/white"/>
+    <View style="@style/LineStyle"/>
     <!--穿衣指数-->
     <RelativeLayout
         android:layout_width="match_parent"
@@ -197,10 +185,7 @@
             android:textSize="14sp"
             />
     </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/white"/>
+    <View style="@style/LineStyle"/>
     <!--感冒指数-->
     <RelativeLayout
         android:layout_width="match_parent"
@@ -241,10 +226,7 @@
             android:textSize="14sp"
             />
     </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/white"/>
+    <View style="@style/LineStyle"/>
     <!--运动指数-->
     <RelativeLayout
         android:layout_width="match_parent"
@@ -285,10 +267,7 @@
             android:textSize="14sp"
             />
     </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/white"/>
+    <View style="@style/LineStyle"/>
     <!--旅行指数-->
     <RelativeLayout
         android:layout_width="match_parent"
@@ -329,10 +308,7 @@
             android:textSize="14sp"
             />
     </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/white"/>
+    <View style="@style/LineStyle"/>
     <!--紫外线指数-->
     <RelativeLayout
         android:layout_width="match_parent"

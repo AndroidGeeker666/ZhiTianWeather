@@ -2,11 +2,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:background="#D8F5F3"
               android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#0FC7B8">
+
+        <Button
+            android:id="@+id/btn_back2"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:background="@mipmap/ic_back"/>
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="搜索"
+            android:textColor="#fff"
+            android:textSize="22sp"/>
+
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/white"
         android:orientation="horizontal"
         >
 
@@ -16,7 +43,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:layout_weight="1"
-            android:hint="请输入城市名称"
+            android:hint="请输入城市名称,支持中英文名称、ID、IP和经纬度"
+
             />
 
         <Button
@@ -25,13 +53,31 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginEnd="15dp"
+            android:background="#0FC7B8"
             android:text="搜索"
-            android:background="@color/colorPrimaryDark"
             android:textColor="@android:color/white"
             android:textSize="20sp"
 
             />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/ll_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        >
+
+        <TextView
+            android:id="@+id/tv_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="魏县"
+            android:textColor="#000"
+            android:textSize="18dp"
+            android:visibility="gone"
+            />
+    </LinearLayout>
 
 </LinearLayout>

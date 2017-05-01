@@ -28,12 +28,11 @@ import com.dulikaifa.zhitianweather.http.OkHttpUtil;
 import com.dulikaifa.zhitianweather.http.Url;
 import com.dulikaifa.zhitianweather.service.AutoUpdateService;
 import com.dulikaifa.zhitianweather.util.HandleJsonUtil;
+import com.umeng.analytics.MobclickAgent;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-
-import static android.view.View.VISIBLE;
 
 /**
  * Author:李晓峰 on 2017/4/22 22:14
@@ -43,6 +42,7 @@ import static android.view.View.VISIBLE;
  */
 
 public class WeatherActivity extends AppCompatActivity {
+    private static final int REQUEST_CODE = 1;
     @InjectView(R.id.aqi_layout)
     LinearLayout aqiLayout;
     @InjectView(R.id.suggestion_layout)
@@ -128,15 +128,17 @@ public class WeatherActivity extends AppCompatActivity {
     private String mWeatherId = "CN101010100";
     public String mCountryName = "中国";
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        if(savedInstanceState!=null){
-            mWeatherId= (String) savedInstanceState.get("weather_id");
-            mCountryName= (String) savedInstanceState.get("countryName");
-        }
+
         super.onCreate(savedInstanceState);
         transparentStatusBar();
         setContentView(R.layout.activity_weather);
+        if (savedInstanceState != null) {
+            mWeatherId = (String) savedInstanceState.get("weather_id");
+            mCountryName = (String) savedInstanceState.get("countryName");
+        }
         ButterKnife.inject(this);
         initView();
         initListener();
@@ -145,28 +147,36 @@ public class WeatherActivity extends AppCompatActivity {
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        if(savedInstanceState!=null){
-            mWeatherId= (String) savedInstanceState.get("weather_id");
-            mCountryName= (String) savedInstanceState.get("countryName");
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            mWeatherId = (String) savedInstanceState.get("weather_id");
+            mCountryName = (String) savedInstanceState.get("countryName");
 
         }
-        super.onRestoreInstanceState(savedInstanceState);
     }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-
+        super.onSaveInstanceState(outState);
         outState.putString("weather_id", mWeatherId);
         outState.putString("countryName", mCountryName);
-        super.onSaveInstanceState(outState);
 
 
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
     }
-
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
     //使状态栏透明
     private void transparentStatusBar() {
         if (Build.VERSION.SDK_INT >= 21) {
@@ -185,53 +195,46 @@ public class WeatherActivity extends AppCompatActivity {
         } else {            //本地没有缓存的必应图片，则从网络请求
             loadBingPic();
         }
-        String searchWeatherId = getIntent().getStringExtra("searchWeatherId");
 
-        if (searchWeatherId != null) {
-            String searchCountryName = getIntent().getStringExtra("searchCountryName");
-            requesWeather(searchWeatherId, searchCountryName);
+        String locationCity = getIntent().getStringExtra("locationCity");
 
-        } else {
+        if(locationCity!=null){
+            String[] location = locationCity.split("-");
+            requesWeather(location[1], location[0]);
+        }else {
             String weatherStr = prefs.getString("json", null);
             String countryName = prefs.getString("countryName", null);
             if (weatherStr != null && countryName != null) {   //本地有天气缓存数据，则优先显示缓存数据
                 mCountryName = countryName;
                 Weather weather = HandleJsonUtil.handleWeatherResponse(weatherStr);
-                if (weather != null&&"ok".equals(weather.status)) {
-                    if (countryName.equals("中国")) {
-                        showAllInfo(weather);
-                        basicLayout.setVisibility(VISIBLE);
-                        nowLayout.setVisibility(VISIBLE);
-                        forecastAllLayout.setVisibility(VISIBLE);
-                        aqiLayout.setVisibility(VISIBLE);
-                        suggestionLayout.setVisibility(VISIBLE);
-                    } else {
-                        showCommonInfo(weather);
-                        basicLayout.setVisibility(VISIBLE);
-                        nowLayout.setVisibility(VISIBLE);
-                        forecastAllLayout.setVisibility(VISIBLE);
-                        aqiLayout.setVisibility(View.INVISIBLE);
-                        suggestionLayout.setVisibility(View.INVISIBLE);
-                    }
-                    mWeatherId = weather.basic.weatherId;
-                    Intent intent = new Intent(WeatherActivity.this, AutoUpdateService.class);
-                    startService(intent);
-                }else{
-                    Toast.makeText(WeatherActivity.this, "存取json发生错误，请检查！", Toast.LENGTH_SHORT).show();
-
-                }
+                showView(countryName, weather);
 
             } else {                    //本地没有天气缓存数据，则从网络请求数据
                 mWeatherId = getIntent().getStringExtra("weather_id");
                 requesWeather(mWeatherId, mCountryName);
             }
         }
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        switch (requestCode) {
+            case REQUEST_CODE:
+                if (resultCode == 2) {
+                    String name = data.getStringExtra("name");
+                    String[] names = name.split("-");
+                    requesWeather(names[1], names[0]);
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     /*
-      加载必应每日一图
-    */
+          加载必应每日一图
+        */
     private void loadBingPic() {
         OkHttpUtil.getInstance().getAsync(Url.BINGPIC_URL, new JsonRequestCallback() {
             @Override
@@ -267,35 +270,13 @@ public class WeatherActivity extends AppCompatActivity {
             @Override
             public void onRequestSucess(String result) {
                 swipeRefresh.setRefreshing(false);
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
+                editor.putString("countryName", countryName);
+                editor.putString("json", result);
+                editor.apply();
+                mCountryName = countryName;
                 Weather weather = HandleJsonUtil.handleWeatherResponse(result);
-                if (weather != null && "ok".equals(weather.status)) {
-                    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
-                    editor.putString("countryName", countryName);
-                    editor.putString("json", result);
-                    editor.commit();
-                    mCountryName = countryName;
-                    mWeatherId = weather.basic.weatherId;
-                    if (countryName.equals("中国")) {
-                        showAllInfo(weather);
-                        weatherLayout.setVisibility(View.VISIBLE);
-                        basicLayout.setVisibility(VISIBLE);
-                        nowLayout.setVisibility(VISIBLE);
-                        forecastAllLayout.setVisibility(VISIBLE);
-                        aqiLayout.setVisibility(VISIBLE);
-                        suggestionLayout.setVisibility(VISIBLE);
-                    } else {
-                        showCommonInfo(weather);
-                        basicLayout.setVisibility(VISIBLE);
-                        nowLayout.setVisibility(VISIBLE);
-                        forecastAllLayout.setVisibility(VISIBLE);
-                        aqiLayout.setVisibility(View.GONE);
-                        suggestionLayout.setVisibility(View.GONE);
-                    }
-                    Intent intent = new Intent(WeatherActivity.this, AutoUpdateService.class);
-                    startService(intent);
-                }else{
-                    Toast.makeText(WeatherActivity.this, "搜索的城市不存在" + "\n" + "或者不在服务范围", Toast.LENGTH_SHORT).show();
-                }
+                showView(countryName, weather);
             }
 
             @Override
@@ -304,7 +285,37 @@ public class WeatherActivity extends AppCompatActivity {
                 Toast.makeText(WeatherActivity.this, "获取天气信息失败！失败原因：" + result, Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
+    private void showView(String countryName, Weather weather) {
+        if (weather != null && "ok".equals(weather.status)) {
+            if (countryName.equals("中国")) {
+                basicLayout.setVisibility(View.VISIBLE);
+                nowLayout.setVisibility(View.VISIBLE);
+                forecastAllLayout.setVisibility(View.VISIBLE);
+                aqiLayout.setVisibility(View.VISIBLE);
+                suggestionLayout.setVisibility(View.VISIBLE);
+                showAllInfo(weather);
+            } else {
+                basicLayout.setVisibility(View.VISIBLE);
+                nowLayout.setVisibility(View.VISIBLE);
+                forecastAllLayout.setVisibility(View.VISIBLE);
+                aqiLayout.setVisibility(View.GONE);
+                suggestionLayout.setVisibility(View.GONE);
+                showCommonInfo(weather);
+            }
+            mWeatherId = weather.basic.weatherId;
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            boolean isUpdateServiceOpen = prefs.getBoolean("isUpdateServiceOpen", true);
+            if(isUpdateServiceOpen){
+                Intent intent = new Intent(WeatherActivity.this, AutoUpdateService.class);
+                startService(intent);
+            }
+
+        } else {
+            Toast.makeText(WeatherActivity.this, "存取json发生错误，请检查！", Toast.LENGTH_SHORT).show();
+
+        }
     }
 
     private void showAllInfo(Weather weather) {
@@ -326,8 +337,11 @@ public class WeatherActivity extends AppCompatActivity {
 
         }
         if (weather.suggestion != null) {
-
-            airDirtyText.setText(weather.suggestion.airIndex.level);
+            if (!(weather.basic.cityName.equals("西安")) && (!(weather.basic.cityName.equals("河北")))) {
+                airDirtyText.setText(weather.suggestion.airIndex.level);
+            } else {
+                airDirtyText.setText("无数据");
+            }
             comfortText.setText(weather.suggestion.comfortIndex.level);
             carWashText.setText(weather.suggestion.carWashIndex.level);
             dressingText.setText(weather.suggestion.dressingIndex.level);
@@ -335,8 +349,11 @@ public class WeatherActivity extends AppCompatActivity {
             sportText.setText(weather.suggestion.sportIndex.level);
             travelText.setText(weather.suggestion.travelIndex.level);
             ultravioletSuggestionText.setText(weather.suggestion.ultravioletRayIndex.level);
-
-            airInfo.setText(weather.suggestion.airIndex.info);
+            if (!(weather.basic.cityName.equals("西安")) && (!(weather.basic.cityName.equals("河北")))) {
+                airInfo.setText(weather.suggestion.airIndex.info);
+            } else {
+                airInfo.setText("无数据");
+            }
             comfortInfo.setText(weather.suggestion.comfortIndex.info);
             carWashInfo.setText(weather.suggestion.carWashIndex.info);
             dressingInfo.setText(weather.suggestion.dressingIndex.info);
@@ -402,14 +419,24 @@ public class WeatherActivity extends AppCompatActivity {
                 moonriseText.setText(forecast.astrology.moonrise);
                 moonsetText.setText(forecast.astrology.moonset);
                 forecastLayout.addView(view);
+
             }
         }
     }
 
-    @OnClick(R.id.nav_button)
-    public void onClick() {
-        drawerLayout.openDrawer(GravityCompat.START);
+    @OnClick({R.id.nav_button, R.id.city_add})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.nav_button:
+                drawerLayout.openDrawer(GravityCompat.START);
+                break;
+            case R.id.city_add:
+                Intent intent = new Intent(WeatherActivity.this, CityManageActivity.class);
+                startActivityForResult(intent, REQUEST_CODE);
+                break;
+            default:
+                break;
+        }
+
     }
-
-
 }

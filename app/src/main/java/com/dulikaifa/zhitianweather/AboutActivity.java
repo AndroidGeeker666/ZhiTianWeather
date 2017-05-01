@@ -1,7 +1,9 @@
 package com.dulikaifa.zhitianweather;
 
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.widget.Button;
+
+import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * Author:李晓峰 on 2017/4/26 19:09
@@ -10,11 +12,33 @@ import android.support.v7.app.AppCompatActivity;
  * Usage :
  */
 
-public class AboutActivity extends AppCompatActivity {
+public class AboutActivity extends BaseActivity {
+
+    @InjectView(R.id.btn_back)
+    Button btnBack;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_about);
+    protected int getLayoutId() {
+        return R.layout.activity_about;
+    }
+
+    @Override
+    protected void initView() {
+
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @OnClick(R.id.btn_back)
+    public void onClick() {
+        finish();
     }
 }

@@ -26,7 +26,7 @@ import com.dulikaifa.zhitianweather.util.HandleJsonUtil;
  */
 
 public class AutoUpdateService extends Service {
-    private static final long SPLASH_DISPLAY_LENGHT = 5 * 60 * 1000;
+    private static final long SPLASH_DISPLAY_LENGHT = 4 * 1000;
 
     @Nullable
     @Override
@@ -36,9 +36,10 @@ public class AutoUpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Toast.makeText(AutoUpdateService.this, "后台服务开启" , Toast.LENGTH_SHORT).show();
         checkUpdate();
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        int anHour = 8 * 60 * 60 * 1000;
+        int anHour = 60 * 60 * 1000;
         long triggerAtTime = SystemClock.elapsedRealtime() + anHour;
         Intent i = new Intent(this, AutoUpdateService.class);
         PendingIntent pi = PendingIntent.getService(this, 0, i, 0);
@@ -52,8 +53,8 @@ public class AutoUpdateService extends Service {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                updateWeather();
                 updateBingPic();
+                updateWeather();
             }
         }, SPLASH_DISPLAY_LENGHT);
     }
@@ -62,6 +63,7 @@ public class AutoUpdateService extends Service {
         OkHttpUtil.getInstance().getAsync(Url.BINGPIC_URL, new JsonRequestCallback() {
             @Override
             public void onRequestSucess(String result) {
+
                 SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(AutoUpdateService.this).edit();
                 editor.putString("bing_pic", result);
                 editor.apply();
@@ -75,6 +77,7 @@ public class AutoUpdateService extends Service {
     }
 
     private void updateWeather() {
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("json", null);
         if (weatherString != null) {
