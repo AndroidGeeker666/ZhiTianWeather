@@ -52,6 +52,7 @@ public class ChooseAreaFragment extends Fragment {
     public static final int LEVEL_CITY = 1;
 
     public static final int LEVEL_COUNTY = 2;
+    private static final String COUNTRY="中国";
     /**
      * 省列表
      */
@@ -92,7 +93,6 @@ public class ChooseAreaFragment extends Fragment {
         backButton = (Button) view.findViewById(R.id.btn_back4);
         setting = (TextView) view.findViewById(R.id.setting);
         listView = (ListView) view.findViewById(R.id.list_view);
-        listView.setVerticalScrollBarEnabled(false);
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, dataList);
         listView.setAdapter(adapter);
         return view;
@@ -116,18 +116,17 @@ public class ChooseAreaFragment extends Fragment {
                     selectedCity = cityList.get(position);
                     queryAndShowCounties();
                 } else if (currentLevel == LEVEL_COUNTY) {
-                    String weatherId = countyList.get(position).getWeatherId();
-                    String countyName = countyList.get(position).getCountyName();
+                    String fragmentCountyName = countyList.get(position).getCountyName();
                     if (getActivity() instanceof MainActivity) {
                         Intent intent = new Intent(getActivity(), WeatherActivity.class);
-                        intent.putExtra("countyName", countyName);
-                        intent.putExtra("weather_id", weatherId);
+                        intent.putExtra("fragmentCountyName", fragmentCountyName);
+                        intent.putExtra("COUNTRY", COUNTRY);
                         startActivity(intent);
                         getActivity().finish();
                     } else if (getActivity() instanceof WeatherActivity) {
                         WeatherActivity activity = (WeatherActivity) getActivity();
                         activity.drawerLayout.closeDrawers();
-                        activity.requesWeather(weatherId, activity.mCountryName);
+                        activity.requesWeather(fragmentCountyName, COUNTRY);
 
                     }
                 }
@@ -158,8 +157,6 @@ public class ChooseAreaFragment extends Fragment {
      * 查询全国所有的省，优先从数据库查询，如果没有查询到再去服务器上查询，并将结果显示出来
      */
     private void queryAndShowProvinces() {
-        titleText.setText("中国");
-        setting.setText("设置");
         setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -283,7 +280,6 @@ public class ChooseAreaFragment extends Fragment {
                     });
             pDialog.setCancelable(false);
             pDialog.show();
-
             setting.setText("刷新");
             setting.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -25,7 +25,8 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="北京"
-            android:textColor="#fff"
+            android:textColor="@color/basic"
+            android:textStyle="bold"
             android:textSize="22sp"/>
 
         <Button
@@ -51,7 +52,7 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="10dp"
             android:text="2017-4-24 18:59"
-            android:textColor="#FFF300"
+            android:textColor="@color/basic"
             android:textSize="14sp"/>
         <TextView
             android:layout_width="wrap_content"
@@ -59,7 +60,7 @@
             android:text="更新于"
             android:layout_toLeftOf="@id/basic_updatetime"
             android:layout_alignBottom="@id/basic_updatetime"
-            android:textColor="#fff"
+            android:textColor="@color/basic"
             android:textSize="14sp"
             />
     </RelativeLayout>

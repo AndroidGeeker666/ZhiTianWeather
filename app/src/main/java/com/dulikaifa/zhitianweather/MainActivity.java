@@ -2,7 +2,6 @@ package com.dulikaifa.zhitianweather;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -18,7 +17,6 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.dulikaifa.zhitianweather.http.NetStatusUtil;
-import com.dulikaifa.zhitianweather.util.GPSStatusUtil;
 import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
@@ -27,11 +25,15 @@ import org.json.JSONObject;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
+import static com.dulikaifa.zhitianweather.R.id.location_btn;
+import static com.dulikaifa.zhitianweather.R.id.location_layout;
+
 public class MainActivity extends AppCompatActivity {
     private AMapLocationClient locationClient = null;
     private AMapLocationClientOption locationOption = null;
-    private SweetAlertDialog pDialog;
-    private FrameLayout location_layout;
+    private FrameLayout locationLayout;
+    private Button locationBtn;
+    private SweetAlertDialog sDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,96 +43,98 @@ public class MainActivity extends AppCompatActivity {
         String weatherJson = prefs.getString("json", null);
         boolean isAutoLocationOpen = prefs.getBoolean("isAutoLocationOpen", true);
         if (isAutoLocationOpen) {
+
+            initView();
             location();
 
-        } else if(weatherJson!=null){
-            JSONObject jsonObject= null;
-            try {
-                jsonObject = new JSONObject(weatherJson);
-                JSONArray heWeather5 = jsonObject.getJSONArray("HeWeather5");
-                String status = heWeather5.getJSONObject(0).getString("status");
-                Toast.makeText(this, "status:" + status, Toast.LENGTH_SHORT).show();
-                if ( "ok".equals(status)){
-                    Intent intent = new Intent(this, WeatherActivity.class);
-                    startActivity(intent);
-                    finish();
-                }else{
-                    Toast.makeText(this, "程序发生错误，请联系开发者！", Toast.LENGTH_SHORT).show();
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }else {
+        } else if (weatherJson != null) {
+            loadDataFromCache(weatherJson);
+        } else {
             setContentView(R.layout.activity_main);
         }
     }
 
+    private void loadDataFromCache(String weatherJson) {
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(weatherJson);
+            JSONArray heWeather5 = jsonObject.getJSONArray("HeWeather5");
+            String status = heWeather5.getJSONObject(0).getString("status");
+            if ("ok".equals(status)) {
+                Intent intent = new Intent(this, WeatherActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                Toast.makeText(this, "程序发生错误，请联系开发者！", Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initView() {
+        setContentView(R.layout.activity_fresh);
+        locationLayout = (FrameLayout) findViewById(location_layout);
+        locationLayout.setVisibility(View.GONE);
+        locationBtn = (Button) findViewById(location_btn);
+        locationBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                location();
+            }
+        });
+    }
+
     private void location() {
-        if (NetStatusUtil.isNetworkAvailable(this)&& GPSStatusUtil.isGpsAvailable(this)) {
+        if (NetStatusUtil.isNetworkAvailable(this)) {
+
+            dialog();
             //初始化定位
             initLocation();
-            dialog();
+            //开始定位
             startLocation();
+
         } else {
-            if(!NetStatusUtil.isNetworkAvailable(this)){
-                SweetAlertDialog sDialog=new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-                        .setTitleText("网络未连接")
-                        .setContentText("请打开网络，以便准确定位")
-                        .setConfirmText("我知道了,去设置")
-                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                            @Override
-                            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
-                                sweetAlertDialog.dismissWithAnimation();
-                            }
-                        });
-                sDialog.setCancelable(false);
-                sDialog.show();
+            sDialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                    .setTitleText("网络未连接")
+                    .setContentText("请打开网络和GPS，以便定位更准确！")
+                    .setConfirmText("点我去设置")
+                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                            sweetAlertDialog.dismissWithAnimation();
+                            startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
+                            locationLayout.setVisibility(View.VISIBLE);
 
-                setContentView(R.layout.activity_fresh);
-                FrameLayout location_layout =  (FrameLayout) findViewById(R.id.location_layout);
-                Button location_btn = (Button) findViewById(R.id.location_btn);
-                location_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        location();
-                    }
-                });
-            }else if(!GPSStatusUtil.isGpsAvailable(this)){
+                        }
+                    });
+            sDialog.setCancelable(false);
+            sDialog.show();
 
-                SweetAlertDialog sDialog=new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-                        .setTitleText("GPS未打开")
-                        .setContentText("请打开GPS，以便准确定位")
-                        .setConfirmText("我知道了,去设置")
-                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                            @Override
-                            public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                                sweetAlertDialog.dismissWithAnimation();
-                            }
-                        });
-                sDialog.setCancelable(false);
-                sDialog.show();
-
-                setContentView(R.layout.activity_fresh);
-                FrameLayout location_layout =  (FrameLayout) findViewById(R.id.location_layout);
-                Button location_btn = (Button) findViewById(R.id.location_btn);
-                location_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        location();
-                    }
-                });
-            }
+            //            }else if(!GPSStatusUtil.isGpsAvailable(this)){
+            //                sDialog=new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+            //                        .setTitleText("GPS未打开")
+            //                        .setContentText("请打开GPS，以便准确定位")
+            //                        .setConfirmText("点我去设置")
+            //                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            //                            @Override
+            //                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+            //                                sweetAlertDialog.dismissWithAnimation();
+            //                                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+            //                            }
+            //                        });
+            //                sDialog.setCancelable(false);
+            //                sDialog.show();
+            //            }
         }
     }
 
     private void dialog() {
-        pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
-        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-        pDialog.setTitleText("自动定位中，请稍候...");
-        pDialog.setCancelable(false);
-        pDialog.show();
+        sDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        sDialog.getProgressHelper().setBarColor(R.color.widget);
+        sDialog.setTitleText("自动定位中，请稍候...");
+        sDialog.setCancelable(false);
+        sDialog.show();
     }
 
     public void onResume() {
@@ -187,31 +191,32 @@ public class MainActivity extends AppCompatActivity {
     AMapLocationListener locationListener = new AMapLocationListener() {
         @Override
         public void onLocationChanged(AMapLocation location) {
-            pDialog.dismiss();
+            locationLayout.setVisibility(View.GONE);
+            stopLocation();
+
             if (null != location) {
-                stopLocation();
                 //errCode等于0代表定位成功，其他的为定位失败，具体的可以参照官网定位错误码说明
                 if (location.getErrorCode() == 0) {
                     String locationCity = location.getCountry() + "-" + location.getCity();
-                    Toast.makeText(MainActivity.this, "定位成功，当前城市：" + locationCity, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "定位成功:" + locationCity, Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
                     intent.putExtra("locationCity", locationCity);
                     MainActivity.this.startActivity(intent);
+                    sDialog.dismiss();
+                    destroyLocation();
                     MainActivity.this.finish();
                 } else {
-
-
+                    sDialog.dismiss();
+                    destroyLocation();
                     //定位失败
-                    String errorMessage = location.getErrorCode() + "\n" + location.getErrorInfo();
-                    Toast.makeText(MainActivity.this, "自动定位失败！失败原因：" + errorMessage, Toast.LENGTH_SHORT).show();
-                    stopLocation();
+                    Toast.makeText(MainActivity.this, "自动定位失败,请手动选择城市！", Toast.LENGTH_SHORT).show();
                     setContentView(R.layout.activity_main);
                 }
-
             } else {
-                stopLocation();
+                sDialog.dismiss();
+                destroyLocation();
                 //定位失败
-                Toast.makeText(MainActivity.this, "自动定位失败！", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "自动定位失败,请手动选择城市！", Toast.LENGTH_SHORT).show();
                 setContentView(R.layout.activity_main);
             }
         }
@@ -254,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
             locationClient.onDestroy();
             locationClient = null;
             locationOption = null;
+            sDialog = null;
         }
     }
 }

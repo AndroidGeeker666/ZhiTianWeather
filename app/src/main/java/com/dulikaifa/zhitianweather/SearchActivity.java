@@ -1,11 +1,13 @@
 package com.dulikaifa.zhitianweather;
 
 import android.content.Intent;
-import android.graphics.Color;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +43,8 @@ public class SearchActivity extends BaseActivity {
     LinearLayout llSearch;
     @InjectView(R.id.btn_back2)
     Button btnBack2;
+    @InjectView(R.id.iv_search_clear)
+    ImageView clear;
 
     private String searchWeatherId;
     private String searchCityName;
@@ -48,6 +52,16 @@ public class SearchActivity extends BaseActivity {
     private String searchCountryName;
     private SweetAlertDialog pDialog;
 
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 
     @Override
     protected int getLayoutId() {
@@ -61,22 +75,38 @@ public class SearchActivity extends BaseActivity {
 
     @Override
     protected void initListener() {
+        editSearch.addTextChangedListener(textWatcher);
 
     }
+
+    private TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            String keyword = s.toString();
+            if(TextUtils.isEmpty(keyword)){
+                clear.setVisibility(View.GONE);
+            }else{
+                clear.setVisibility(View.VISIBLE);
+            }
+        }
+    };
 
     @Override
     protected void initData() {
 
     }
-    public void onResume() {
-        super.onResume();
-        MobclickAgent.onResume(this);
-    }
-    public void onPause() {
-        super.onPause();
-        MobclickAgent.onPause(this);
-    }
-    @OnClick({R.id.btn_back2,R.id.btn_search, R.id.ll_search})
+
+    @OnClick({R.id.btn_back2, R.id.btn_search, R.id.ll_search,R.id.iv_search_clear})
     public void onClick(View view) {
         String cityName = editSearch.getText().toString().trim();
         switch (view.getId()) {
@@ -98,7 +128,9 @@ public class SearchActivity extends BaseActivity {
                     SearchActivity.this.setResult(RESULT_CODE, intent);
                     SearchActivity.this.finish();
                 }
-
+            case R.id.iv_search_clear:
+                editSearch.getText().clear();
+                clear.setVisibility(View.GONE);
                 break;
             case R.id.btn_back2:
                 finish();
@@ -112,8 +144,8 @@ public class SearchActivity extends BaseActivity {
 
     private void searchCityWeacherId(String searchCityUrl) {
         pDialog = new SweetAlertDialog(SearchActivity.this, SweetAlertDialog.PROGRESS_TYPE);
-        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-        pDialog.setTitleText("加载中...");
+        pDialog.getProgressHelper().setBarColor(R.color.widget);
+        pDialog.setTitleText("搜索中...");
         pDialog.setCancelable(false);
         pDialog.show();
         OkHttpUtil.getInstance().getAsync(searchCityUrl, new JsonRequestCallback() {
@@ -141,7 +173,7 @@ public class SearchActivity extends BaseActivity {
             @Override
             public void onRequestFailure(String result) {
                 pDialog.dismiss();
-                Toast.makeText(SearchActivity.this, "获取城市信息失败,失败原因是：" + result, Toast.LENGTH_SHORT).show();
+                Toast.makeText(SearchActivity.this, "获取城市信息失败,请检查网络！", Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -12,11 +12,9 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
-import com.dulikaifa.zhitianweather.bean.Weather;
 import com.dulikaifa.zhitianweather.http.JsonRequestCallback;
 import com.dulikaifa.zhitianweather.http.OkHttpUtil;
 import com.dulikaifa.zhitianweather.http.Url;
-import com.dulikaifa.zhitianweather.util.HandleJsonUtil;
 
 /**
  * Author:李晓峰 on 2017/4/23 16:57
@@ -36,7 +34,7 @@ public class AutoUpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(AutoUpdateService.this, "后台服务开启" , Toast.LENGTH_SHORT).show();
+        Toast.makeText(AutoUpdateService.this, "天气自动更新服务开启成功", Toast.LENGTH_SHORT).show();
         checkUpdate();
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
         int anHour = 60 * 60 * 1000;
@@ -71,7 +69,7 @@ public class AutoUpdateService extends Service {
 
             @Override
             public void onRequestFailure(String result) {
-                Toast.makeText(AutoUpdateService.this, "后台服务获取必应图片失败！失败原因：" + result, Toast.LENGTH_SHORT).show();
+                Toast.makeText(AutoUpdateService.this, "获取背景图片失败，请检查网络设置！", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -79,28 +77,22 @@ public class AutoUpdateService extends Service {
     private void updateWeather() {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String weatherString = prefs.getString("json", null);
-        if (weatherString != null) {
-            Weather weather = HandleJsonUtil.handleWeatherResponse(weatherString);
-            if (weather != null) {
-                String weatherId = weather.basic.weatherId;
-                String weatherUrl = Url.WEATHER_Url + "?city=" + weatherId + "&key=" + Url.APP_KEY;
+        String weatherId = prefs.getString("weatherId", null);
+        if (weatherId != null) {
+            String weatherUrl = Url.WEATHER_Url + "?city=" + weatherId + "&key=" + Url.APP_KEY;
+            OkHttpUtil.getInstance().getAsync(weatherUrl, new JsonRequestCallback() {
+                @Override
+                public void onRequestSucess(String result) {
+                    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(AutoUpdateService.this).edit();
+                    editor.putString("json", result);
+                    editor.apply();
+                }
 
-                OkHttpUtil.getInstance().getAsync(weatherUrl, new JsonRequestCallback() {
-                    @Override
-                    public void onRequestSucess(String result) {
-
-                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(AutoUpdateService.this).edit();
-                        editor.putString("json", result);
-                        editor.apply();
-                    }
-
-                    @Override
-                    public void onRequestFailure(String result) {
-                        Toast.makeText(AutoUpdateService.this, "后台服务更新天气失败！失败原因：" + result, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
+                @Override
+                public void onRequestFailure(String result) {
+                    Toast.makeText(AutoUpdateService.this, "更新天气失败,请检查网络！", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 }

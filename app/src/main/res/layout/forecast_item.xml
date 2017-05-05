@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:background="#7000"
+              android:background="@color/forecast"
               android:orientation="vertical"
     >
 
@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="2017-4-24"
-            android:textColor="@android:color/white"
+            android:textColor="@color/basic"
             android:textSize="24sp"
             />
     </LinearLayout>
@@ -38,7 +38,7 @@
                 android:id="@+id/sky"
                 style="@style/ForecastStyle"
                 android:textSize="18sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/basic"
                 android:text="天气"/>
 
             <TextView
@@ -46,7 +46,7 @@
                 style="@style/ForecastStyle"
                 android:layout_below="@id/sky"
                 android:textSize="14sp"
-                android:textColor="#FFF300"
+                android:textColor="@color/basic"
                 android:text="晴转阴"/>
         </RelativeLayout>
         <!--气温-->
@@ -59,7 +59,7 @@
                 android:id="@+id/temp"
                 style="@style/ForecastStyle"
                 android:textSize="18sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/basic"
                 android:text="气温"/>
 
             <TextView
@@ -67,7 +67,7 @@
                 style="@style/ForecastStyle"
                 android:layout_below="@id/temp"
                 android:textSize="14sp"
-                android:textColor="#FFF300"
+                android:textColor="@color/basic"
                 android:text="12~28℃"/>
         </RelativeLayout>
     </LinearLayout>
@@ -88,7 +88,7 @@
                 android:id="@+id/winddeg"
                 style="@style/ForecastStyle"
                 android:textSize="18sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/basic"
                 android:text="风向角"/>
 
             <TextView
@@ -96,7 +96,7 @@
                 style="@style/ForecastStyle"
                 android:layout_below="@id/winddeg"
                 android:textSize="14sp"
-                android:textColor="#FFF300"
+                android:textColor="@color/basic"
                 android:text="155°"/>
         </RelativeLayout>
         <!--风向-->
@@ -109,7 +109,7 @@
                 android:id="@+id/winddir"
                 style="@style/ForecastStyle"
                 android:textSize="18sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/basic"
                 android:text="风向"/>
 
             <TextView
@@ -117,7 +117,7 @@
                 style="@style/ForecastStyle"
                 android:layout_below="@id/winddir"
                 android:textSize="14sp"
-                android:textColor="#FFF300"
+                android:textColor="@color/basic"
                 android:text="东南风"/>
         </RelativeLayout>
     </LinearLayout>
@@ -138,7 +138,7 @@
                 android:id="@+id/windpower"
                 style="@style/ForecastStyle"
                 android:textSize="18sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/basic"
                 android:text="风力"/>
 
             <TextView
@@ -146,7 +146,7 @@
                 style="@style/ForecastStyle"
                 android:layout_below="@id/windpower"
                 android:textSize="14sp"
-                android:textColor="#FFF300"
+                android:textColor="@color/basic"
                 android:text="3级"/>
         </RelativeLayout>
         <!--风速-->
@@ -159,7 +159,7 @@
                 android:id="@+id/windspeed"
                 style="@style/ForecastStyle"
                 android:textSize="18sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/basic"
                 android:text="风速"/>
 
             <TextView
@@ -167,7 +167,7 @@
                 style="@style/ForecastStyle"
                 android:layout_below="@id/windspeed"
                 android:textSize="14sp"
-                android:textColor="#FFF300"
+                android:textColor="@color/basic"
                 android:text="19kmph"/>
         </RelativeLayout>
     </LinearLayout>
@@ -188,7 +188,7 @@
                 android:id="@+id/humidity"
                 style="@style/ForecastStyle"
                 android:textSize="18sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/basic"
                 android:text="相对湿度"/>
 
             <TextView
@@ -196,7 +196,7 @@
                 style="@style/ForecastStyle"
                 android:layout_below="@id/humidity"
                 android:textSize="14sp"
-                android:textColor="#FFF300"
+                android:textColor="@color/basic"
                 android:text="17%"/>
         </RelativeLayout>
         <!--降水概率-->
@@ -209,7 +209,7 @@
                 android:id="@+id/rainProbability"
                 style="@style/ForecastStyle"
                 android:textSize="18sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/basic"
                 android:text="降水概率"/>
 
             <TextView
@@ -217,7 +217,7 @@
                 style="@style/ForecastStyle"
                 android:layout_below="@id/rainProbability"
                 android:textSize="14sp"
-                android:textColor="#FFF300"
+                android:textColor="@color/basic"
                 android:text="0"/>
         </RelativeLayout>
     </LinearLayout>
@@ -238,7 +238,7 @@
                 android:id="@+id/rainAmout"
                 style="@style/ForecastStyle"
                 android:textSize="18sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/basic"
                 android:text="降水量"/>
 
             <TextView
@@ -246,7 +246,7 @@
                 style="@style/ForecastStyle"
                 android:layout_below="@id/rainAmout"
                 android:textSize="14sp"
-                android:textColor="#FFF300"
+                android:textColor="@color/basic"
                 android:text="0.0mm"/>
         </RelativeLayout>
         <!--气压-->
@@ -259,7 +259,7 @@
                 android:id="@+id/atmospheric"
                 style="@style/ForecastStyle"
                 android:textSize="18sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/basic"
                 android:text="气压"/>
 
             <TextView
@@ -267,7 +267,7 @@
                 style="@style/ForecastStyle"
                 android:layout_below="@id/atmospheric"
                 android:textSize="14sp"
-                android:textColor="#FFF300"
+                android:textColor="@color/basic"
                 android:text="997兆帕"/>
         </RelativeLayout>
     </LinearLayout>
@@ -288,7 +288,7 @@
                 android:id="@+id/ultravioletRay"
                 style="@style/ForecastStyle"
                 android:textSize="18sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/basic"
                 android:text="紫外线"/>
 
             <TextView
@@ -296,7 +296,7 @@
                 style="@style/ForecastStyle"
                 android:layout_below="@id/ultravioletRay"
                 android:textSize="14sp"
-                android:textColor="#FFF300"
+                android:textColor="@color/basic"
                 android:text="8级"/>
         </RelativeLayout>
         <!--能见度-->
@@ -309,7 +309,7 @@
                 android:id="@+id/visibility"
                 style="@style/ForecastStyle"
                 android:textSize="18sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/basic"
                 android:text="能见度"/>
 
             <TextView
@@ -317,7 +317,7 @@
                 style="@style/ForecastStyle"
                 android:layout_below="@id/visibility"
                 android:textSize="14sp"
-                android:textColor="#FFF300"
+                android:textColor="@color/basic"
                 android:text="1km"/>
         </RelativeLayout>
     </LinearLayout>
@@ -338,7 +338,7 @@
                 android:id="@+id/sunrise"
                 style="@style/ForecastStyle"
                 android:textSize="18sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/basic"
                 android:text="日出"/>
 
             <TextView
@@ -346,7 +346,7 @@
                 style="@style/ForecastStyle"
                 android:layout_below="@id/sunrise"
                 android:textSize="14sp"
-                android:textColor="#FFF300"
+                android:textColor="@color/basic"
                 android:text="05:41"/>
         </RelativeLayout>
         <!--日落-->
@@ -359,7 +359,7 @@
                 android:id="@+id/sunset"
                 style="@style/ForecastStyle"
                 android:textSize="18sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/basic"
                 android:text="日落"/>
 
             <TextView
@@ -367,7 +367,7 @@
                 style="@style/ForecastStyle"
                 android:layout_below="@id/sunset"
                 android:textSize="14sp"
-                android:textColor="#FFF300"
+                android:textColor="@color/basic"
                 android:text="18:47"/>
         </RelativeLayout>
     </LinearLayout>
@@ -388,7 +388,7 @@
                 android:id="@+id/moonrise"
                 style="@style/ForecastStyle"
                 android:textSize="18sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/basic"
                 android:text="月出"/>
 
             <TextView
@@ -396,7 +396,7 @@
                 style="@style/ForecastStyle"
                 android:layout_below="@id/moonrise"
                 android:textSize="14sp"
-                android:textColor="#FFF300"
+                android:textColor="@color/basic"
                 android:text="04:19"/>
         </RelativeLayout>
         <!--月落-->
@@ -409,7 +409,7 @@
                 android:id="@+id/moonset"
                 style="@style/ForecastStyle"
                 android:textSize="18sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/basic"
                 android:text="月落"/>
 
             <TextView
@@ -417,7 +417,7 @@
                 style="@style/ForecastStyle"
                 android:layout_below="@id/moonset"
                 android:textSize="14sp"
-                android:textColor="#FFF300"
+                android:textColor="@color/basic"
                 android:text="18:07"/>
         </RelativeLayout>
     </LinearLayout>

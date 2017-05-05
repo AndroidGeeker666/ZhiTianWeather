@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +32,7 @@ import com.umeng.analytics.MobclickAgent;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Author:李晓峰 on 2017/4/22 22:14
@@ -50,7 +50,9 @@ public class WeatherActivity extends AppCompatActivity {
     @InjectView(R.id.forecast_layout)
     LinearLayout forecastLayout;
     @InjectView(R.id.now_layout)
-    RelativeLayout nowLayout;
+    LinearLayout nowLayout;
+    @InjectView(R.id.dynamic_layout)
+    LinearLayout dynamicLayout;
     @InjectView(R.id.basic_layout)
     LinearLayout basicLayout;
     @InjectView(R.id.forecast_all_layout)
@@ -71,6 +73,8 @@ public class WeatherActivity extends AppCompatActivity {
     TextView nowWinddirText;
     @InjectView(R.id.now_windpower_text)
     TextView nowWindpowerText;
+    @InjectView(R.id.now_feel_temp)
+    TextView nowFeelTemp;
     @InjectView(R.id.air_text)
     TextView airText;
     @InjectView(R.id.aqi_text)
@@ -125,10 +129,9 @@ public class WeatherActivity extends AppCompatActivity {
     TextView travelInfo;
     @InjectView(R.id.ultraviolet_suggestion_info)
     TextView ultravioletSuggestionInfo;
-    private String mWeatherId = "CN101010100";
-    public String mCountryName = "中国";
-
-
+    private String mWeatherId;
+    private String mCountryName;
+    private SweetAlertDialog sDialog;
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -160,23 +163,24 @@ public class WeatherActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putString("weather_id", mWeatherId);
         outState.putString("countryName", mCountryName);
-
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        sDialog=null;
     }
+
     public void onResume() {
         super.onResume();
         MobclickAgent.onResume(this);
     }
+
     public void onPause() {
         super.onPause();
         MobclickAgent.onPause(this);
     }
+
     //使状态栏透明
     private void transparentStatusBar() {
         if (Build.VERSION.SDK_INT >= 21) {
@@ -198,20 +202,26 @@ public class WeatherActivity extends AppCompatActivity {
 
         String locationCity = getIntent().getStringExtra("locationCity");
 
-        if(locationCity!=null){
+        if (locationCity != null) {
             String[] location = locationCity.split("-");
+            swipeRefresh.setRefreshing(true);
             requesWeather(location[1], location[0]);
-        }else {
-            String weatherStr = prefs.getString("json", null);
-            String countryName = prefs.getString("countryName", null);
-            if (weatherStr != null && countryName != null) {   //本地有天气缓存数据，则优先显示缓存数据
-                mCountryName = countryName;
-                Weather weather = HandleJsonUtil.handleWeatherResponse(weatherStr);
-                showView(countryName, weather);
-
-            } else {                    //本地没有天气缓存数据，则从网络请求数据
-                mWeatherId = getIntent().getStringExtra("weather_id");
-                requesWeather(mWeatherId, mCountryName);
+        } else {
+            String COUNTRY = getIntent().getStringExtra("COUNTRY");
+            String fragmentCountyName = getIntent().getStringExtra("fragmentCountyName");
+            if (COUNTRY != null && fragmentCountyName != null) {
+                swipeRefresh.setRefreshing(true);
+                requesWeather(fragmentCountyName, COUNTRY);
+            } else {
+                String weatherStr = prefs.getString("json", null);
+                String weatherId=prefs.getString("weatherId", null);
+                String countryName = prefs.getString("countryName", null);
+                if (weatherStr != null && countryName != null) {
+                    mWeatherId=weatherId;
+                    mCountryName = countryName;
+                    Weather weather = HandleJsonUtil.handleWeatherResponse(weatherStr);
+                    showView(countryName, weather);
+                }
             }
         }
     }
@@ -256,7 +266,9 @@ public class WeatherActivity extends AppCompatActivity {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                requesWeather(mWeatherId, mCountryName);
+                if(mWeatherId!=null&&mCountryName!=null){
+                    requesWeather(mWeatherId, mCountryName);
+                }
             }
         });
     }
@@ -264,17 +276,19 @@ public class WeatherActivity extends AppCompatActivity {
     /**
      * 根据天气id请求城市天气信息。
      */
-    public void requesWeather(String weatherId, final String countryName) {
+    public void requesWeather(final String weatherId, final String countryName) {
         String weatherUrl = Url.WEATHER_Url + "?city=" + weatherId + "&key=" + Url.APP_KEY;
         OkHttpUtil.getInstance().getAsync(weatherUrl, new JsonRequestCallback() {
             @Override
             public void onRequestSucess(String result) {
                 swipeRefresh.setRefreshing(false);
+                mWeatherId=weatherId;
+                mCountryName = countryName;
                 SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
                 editor.putString("countryName", countryName);
+                editor.putString("weatherId",weatherId);
                 editor.putString("json", result);
                 editor.apply();
-                mCountryName = countryName;
                 Weather weather = HandleJsonUtil.handleWeatherResponse(result);
                 showView(countryName, weather);
             }
@@ -282,7 +296,7 @@ public class WeatherActivity extends AppCompatActivity {
             @Override
             public void onRequestFailure(String result) {
                 swipeRefresh.setRefreshing(false);
-                Toast.makeText(WeatherActivity.this, "获取天气信息失败！失败原因：" + result, Toast.LENGTH_SHORT).show();
+                Toast.makeText(WeatherActivity.this, "获取天气信息失败,请检查网络设置!", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -304,10 +318,10 @@ public class WeatherActivity extends AppCompatActivity {
                 suggestionLayout.setVisibility(View.GONE);
                 showCommonInfo(weather);
             }
-            mWeatherId = weather.basic.weatherId;
+
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             boolean isUpdateServiceOpen = prefs.getBoolean("isUpdateServiceOpen", true);
-            if(isUpdateServiceOpen){
+            if (isUpdateServiceOpen) {
                 Intent intent = new Intent(WeatherActivity.this, AutoUpdateService.class);
                 startService(intent);
             }
@@ -319,8 +333,9 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private void showAllInfo(Weather weather) {
-        showCommonInfo(weather);
         showPartInfo(weather);
+        showCommonInfo(weather);
+
     }
 
     private void showPartInfo(Weather weather) {
@@ -350,17 +365,17 @@ public class WeatherActivity extends AppCompatActivity {
             travelText.setText(weather.suggestion.travelIndex.level);
             ultravioletSuggestionText.setText(weather.suggestion.ultravioletRayIndex.level);
             if (!(weather.basic.cityName.equals("西安")) && (!(weather.basic.cityName.equals("河北")))) {
-                airInfo.setText(weather.suggestion.airIndex.info);
+                airInfo.setText("       "+weather.suggestion.airIndex.info);
             } else {
                 airInfo.setText("无数据");
             }
-            comfortInfo.setText(weather.suggestion.comfortIndex.info);
-            carWashInfo.setText(weather.suggestion.carWashIndex.info);
-            dressingInfo.setText(weather.suggestion.dressingIndex.info);
-            influenzaInfo.setText(weather.suggestion.influenzaIndex.info);
-            sportInfo.setText(weather.suggestion.sportIndex.info);
-            travelInfo.setText(weather.suggestion.travelIndex.info);
-            ultravioletSuggestionInfo.setText(weather.suggestion.ultravioletRayIndex.info);
+            comfortInfo.setText("       "+weather.suggestion.comfortIndex.info);
+            carWashInfo.setText("       "+weather.suggestion.carWashIndex.info);
+            dressingInfo.setText("       "+weather.suggestion.dressingIndex.info);
+            influenzaInfo.setText("       "+weather.suggestion.influenzaIndex.info);
+            sportInfo.setText("       "+weather.suggestion.sportIndex.info);
+            travelInfo.setText("       "+weather.suggestion.travelIndex.info);
+            ultravioletSuggestionInfo.setText("       "+weather.suggestion.ultravioletRayIndex.info);
 
         }
 
@@ -373,10 +388,31 @@ public class WeatherActivity extends AppCompatActivity {
         if (weather != null) {
             basicCity.setText(weather.basic.cityName);
             basicUpdatetime.setText(weather.basic.update.updateTime);
-            nowDegreeText.setText(weather.now.nowTemperature + "℃");
+            nowDegreeText.setText(weather.now.nowTemperature + "°");
             nowWeatherText.setText(weather.now.nowCondition.weather);
             nowWinddirText.setText(weather.now.wind.nowWindDirection);
+            nowFeelTemp.setText("体感温度" + weather.now.nowFeelTemperature + "°");
             nowWindpowerText.setText(weather.now.wind.nowWindPower + "级");
+            dynamicLayout.removeAllViews();
+            for (int i = 0; i < weather.forecastList.size(); i++) {
+                Forecast forecast = weather.forecastList.get(i);
+                View view = LayoutInflater.from(this).inflate(R.layout.dynamic_item, dynamicLayout, false);
+                TextView today = (TextView) view.findViewById(R.id.today);
+                TextView today_weather = (TextView) view.findViewById(R.id.today_weather);
+                TextView today_temp = (TextView) view.findViewById(R.id.today_temp);
+                today.setText(forecast.date.substring(5));
+                if (forecast.condition.weatherDay.equals(forecast.condition.weatherNight)) {
+                    today_weather.setText(forecast.condition.weatherDay);
+                } else {
+                    today_weather.setText(forecast.condition.weatherDay + "转" + forecast.condition.weatherNight);
+                }
+                today_temp.setText(forecast.temperature.min + "~" + forecast.temperature.max + "°");
+                dynamicLayout.addView(view);
+                if (i != 2) {
+                    View view1 = LayoutInflater.from(this).inflate(R.layout.line, dynamicLayout, false);
+                    dynamicLayout.addView(view1);
+                }
+            }
             forecastLayout.removeAllViews();
             for (Forecast forecast : weather.forecastList) {
                 View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false);
@@ -403,7 +439,7 @@ public class WeatherActivity extends AppCompatActivity {
                 } else {
                     skyText.setText(forecast.condition.weatherDay + "转" + forecast.condition.weatherNight);
                 }
-                tempText.setText(forecast.temperature.min + "~" + forecast.temperature.max + "℃");
+                tempText.setText(forecast.temperature.min + "~" + forecast.temperature.max + "°");
                 winddegText.setText(forecast.wind.windDegree + "°");
                 winddirText.setText(forecast.wind.windDirection);
                 windpowerText.setText(forecast.wind.windPower);
@@ -437,6 +473,29 @@ public class WeatherActivity extends AppCompatActivity {
             default:
                 break;
         }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        sDialog = new SweetAlertDialog(WeatherActivity.this, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("确定退出知天天气?")
+                .setCancelText("取消")
+                .setConfirmText("确定")
+                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        sDialog.cancel();
+                    }
+                })
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        WeatherActivity.super.onBackPressed();
+                    }
+                });
+        sDialog.show();
 
     }
 }

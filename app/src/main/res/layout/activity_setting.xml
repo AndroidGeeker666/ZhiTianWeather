@@ -25,6 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="设置"
+            android:textStyle="bold"
             android:textColor="#fff"
             android:textSize="22sp"/>
 

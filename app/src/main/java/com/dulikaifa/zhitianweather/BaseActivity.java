@@ -28,6 +28,16 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     }
 
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
     protected abstract int getLayoutId();
 
     protected abstract void initView();
@@ -36,12 +46,4 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract void initData();
 
-    public void onResume() {
-        super.onResume();
-        MobclickAgent.onResume(this);
-    }
-    public void onPause() {
-        super.onPause();
-        MobclickAgent.onPause(this);
-    }
 }
