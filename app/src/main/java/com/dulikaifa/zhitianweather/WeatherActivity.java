@@ -268,6 +268,7 @@ public class WeatherActivity extends AppCompatActivity {
             public void onRefresh() {
                 if(mWeatherId!=null&&mCountryName!=null){
                     requesWeather(mWeatherId, mCountryName);
+                    Toast.makeText(WeatherActivity.this,"刷新成功",Toast.LENGTH_SHORT).show();
                 }
             }
         });
