@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">知天天气</string>
+    <string name="speaker_names">请选择天气预报员</string>
 </resources>

@@ -11,18 +11,17 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        >
+        android:layout_weight="1">
 
         <TextView
             android:id="@+id/now_degree_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="120dp"
+            android:layout_height="100dp"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="100dp"
             android:text="18°"
             android:textColor="@color/basic"
-            android:textSize="80sp"/>
+            android:textSize="70sp" />
 
         <TextView
             android:id="@+id/now_weather_text"
@@ -32,7 +31,7 @@
             android:layout_toRightOf="@id/now_degree_text"
             android:text="晴"
             android:textColor="@color/basic"
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/now_winddir_text"
@@ -43,7 +42,7 @@
             android:layout_marginBottom="40dp"
             android:text="东南风"
             android:textColor="@color/basic"
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/now_windpower_text"
@@ -54,7 +53,7 @@
             android:layout_toRightOf="@id/now_winddir_text"
             android:text="3-4级"
             android:textColor="@color/basic"
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/now_feel_temp"
@@ -64,7 +63,7 @@
             android:layout_marginBottom="70dp"
             android:text="体感温度17°"
             android:textColor="@color/basic"
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -72,9 +71,16 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="15dp"
-            android:text="----上滑查看更多----"
-            android:textColor="@color/basic"
-            />
+            android:text="--上滑查看更多--"
+            android:textColor="@color/basic" />
+
+        <ImageButton
+            android:id="@+id/iv_voice"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/voice_selector"
+            android:layout_alignTop="@id/now_degree_text"
+            android:layout_toEndOf="@id/now_degree_text" />
     </RelativeLayout>
 
     <LinearLayout

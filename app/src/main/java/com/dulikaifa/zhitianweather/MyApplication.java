@@ -3,6 +3,8 @@ package com.dulikaifa.zhitianweather;
 import android.app.Application;
 import android.content.Context;
 
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechUtility;
 import com.orhanobut.logger.LogLevel;
 import com.orhanobut.logger.Logger;
 import com.umeng.analytics.MobclickAgent;
@@ -42,6 +44,7 @@ public class MyApplication extends Application {
                 "59059b8e8f4a9d1b5f00145d", "Wandoujia", MobclickAgent.EScenarioType.E_UM_NORMAL));
         //打开调试模式
         MobclickAgent.setDebugMode( true );
+        SpeechUtility.createUtility(context, SpeechConstant.APPID+"=590e88f2");
     }
 
     public static Context getContext() {

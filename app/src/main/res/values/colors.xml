@@ -10,4 +10,5 @@
     <color name="btnBgPressed">#FF0D9B8B</color>
     <color name="basic">#fff</color>
     <color name="forecast">#6000</color>
+    <color name="black">#000</color>
 </resources>

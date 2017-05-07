@@ -2,6 +2,7 @@ package com.dulikaifa.zhitianweather;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
@@ -11,12 +12,14 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.dulikaifa.zhitianweather.service.AutoUpdateService;
 import com.dulikaifa.zhitianweather.service.ServiceStateUtils;
 import com.umeng.analytics.MobclickAgent;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Author:李晓峰 on 2017/4/26 18:11
@@ -27,6 +30,7 @@ import butterknife.OnClick;
 
 public class SettingActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
 
+    private static final long UPDATE_TIME = 1500;
     @InjectView(R.id.tv_version)
     TextView tvVersion;
     @InjectView(R.id.about_layout)
@@ -39,6 +43,10 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
     Switch switchAutoUpdate;
     @InjectView(R.id.switch_auto_location)
     Switch switchAutoLocation;
+    @InjectView(R.id.speaker_layout)
+    RelativeLayout speakerLayout;
+    @InjectView(R.id.speaker)
+    TextView speaker;
     boolean isUpdateServiceOpen = true;
     boolean isAutoLocationOpen = true;
 
@@ -85,19 +93,58 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
         MobclickAgent.onPause(this);
     }
 
-    @OnClick({R.id.btn_back3, R.id.update, R.id.about_layout})
+    @OnClick({R.id.btn_back3, R.id.update, R.id.about_layout,R.id.speaker_layout})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_back3:
                 finish();
                 break;
             case R.id.update:
-                Toast.makeText(getApplicationContext(), "已是最新版本！", Toast.LENGTH_SHORT).show();
+                final SweetAlertDialog sDialog = new SweetAlertDialog(SettingActivity.this, SweetAlertDialog.PROGRESS_TYPE);
+                sDialog.getProgressHelper().setBarColor(R.color.widget);
+                sDialog.setTitleText("检测中，请稍候...");
+                sDialog.setCancelable(false);
+                sDialog.show();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        sDialog.dismiss();
+                        new SweetAlertDialog(SettingActivity.this)
+                                .setTitleText("已是最新版本")
+                                .show();
+//                        Toast.makeText(getApplicationContext(), "已是最新版本", Toast.LENGTH_SHORT).show();
+                    }
+                }, UPDATE_TIME);
+
                 break;
 
             case R.id.about_layout:
                 Intent intent = new Intent(SettingActivity.this, AboutActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.speaker_layout:
+                new MaterialDialog.Builder(this)
+                        .title(R.string.speaker_names)
+                        .items(R.array.speakers)
+                        .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
+                            @Override
+                            public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                /**
+                                 * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
+                                 * returning false here won't allow the newly selected radio button to actually be selected.
+                                 **/
+                                int beginIndex = text.toString().indexOf("x");
+                                String speakerName=text.toString().substring(beginIndex);
+                                speaker.setText(speakerName);
+                                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(SettingActivity.this).edit();
+                                editor.putString("speakerName", speakerName);
+                                editor.apply();
+                                return true;
+                            }
+                        })
+                        .positiveText("确定")
+                        .show();
+
                 break;
         }
     }

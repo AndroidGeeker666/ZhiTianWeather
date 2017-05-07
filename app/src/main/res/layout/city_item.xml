@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_centerVertical="true"
-
+        android:background="@drawable/item_bg_selector"
         >
 
         <TextView
@@ -20,7 +20,7 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="15dp"
             android:textSize="18dp"
-            android:textColor="@color/statusbar"
+            android:textColor="@color/black"
             />
     </RelativeLayout>
 </RelativeLayout>

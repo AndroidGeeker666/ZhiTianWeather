@@ -3,6 +3,7 @@ package com.dulikaifa.zhitianweather;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -13,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -23,16 +25,27 @@ import com.bumptech.glide.Glide;
 import com.dulikaifa.zhitianweather.bean.Forecast;
 import com.dulikaifa.zhitianweather.bean.Weather;
 import com.dulikaifa.zhitianweather.http.JsonRequestCallback;
+import com.dulikaifa.zhitianweather.http.NetStatusUtil;
 import com.dulikaifa.zhitianweather.http.OkHttpUtil;
 import com.dulikaifa.zhitianweather.http.Url;
 import com.dulikaifa.zhitianweather.service.AutoUpdateService;
 import com.dulikaifa.zhitianweather.util.HandleJsonUtil;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechError;
+import com.iflytek.cloud.SpeechSynthesizer;
+import com.iflytek.cloud.SynthesizerListener;
+import com.iflytek.sunflower.FlowerCollector;
 import com.umeng.analytics.MobclickAgent;
+
+import java.util.Calendar;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import cn.pedant.SweetAlert.SweetAlertDialog;
+
+import static com.dulikaifa.zhitianweather.MyApplication.context;
+
 
 /**
  * Author:李晓峰 on 2017/4/22 22:14
@@ -129,9 +142,15 @@ public class WeatherActivity extends AppCompatActivity {
     TextView travelInfo;
     @InjectView(R.id.ultraviolet_suggestion_info)
     TextView ultravioletSuggestionInfo;
+    @InjectView(R.id.iv_voice)
+    ImageButton ivVoice;
     private String mWeatherId;
     private String mCountryName;
     private SweetAlertDialog sDialog;
+    private SpeechSynthesizer mTts;
+    private static String TAG = WeatherActivity.class.getSimpleName();
+    private Weather mWeather;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -145,6 +164,13 @@ public class WeatherActivity extends AppCompatActivity {
         ButterKnife.inject(this);
         initView();
         initListener();
+        initIflyVoice();
+
+    }
+
+    private void startSpeakingWeather(String weatherContent) {
+        //3.开始合成
+        mTts.startSpeaking(weatherContent, null);
 
     }
 
@@ -168,17 +194,28 @@ public class WeatherActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        sDialog=null;
+        sDialog = null;
+        if (null != mTts) {
+            mTts.stopSpeaking();
+            // 退出时释放连接
+            mTts.destroy();
+        }
     }
 
     public void onResume() {
         super.onResume();
         MobclickAgent.onResume(this);
+        //移动数据统计分析
+        FlowerCollector.onResume(WeatherActivity.this);
+        FlowerCollector.onPageStart(TAG);
     }
 
     public void onPause() {
         super.onPause();
         MobclickAgent.onPause(this);
+        //移动数据统计分析
+        FlowerCollector.onPageEnd(TAG);
+        FlowerCollector.onPause(WeatherActivity.this);
     }
 
     //使状态栏透明
@@ -192,6 +229,7 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private void initView() {
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String bingPic = prefs.getString("bing_pic", null);
         if (bingPic != null) {//本地有缓存的必应图片，直接从缓存中加载
@@ -214,16 +252,26 @@ public class WeatherActivity extends AppCompatActivity {
                 requesWeather(fragmentCountyName, COUNTRY);
             } else {
                 String weatherStr = prefs.getString("json", null);
-                String weatherId=prefs.getString("weatherId", null);
+                String weatherId = prefs.getString("weatherId", null);
                 String countryName = prefs.getString("countryName", null);
                 if (weatherStr != null && countryName != null) {
-                    mWeatherId=weatherId;
+                    mWeatherId = weatherId;
                     mCountryName = countryName;
                     Weather weather = HandleJsonUtil.handleWeatherResponse(weatherStr);
                     showView(countryName, weather);
                 }
             }
         }
+    }
+
+    private void initIflyVoice() {
+        //1.创建SpeechSynthesizer 对象, 第二个参数：本地合成时传InitListener
+        mTts = SpeechSynthesizer.createSynthesizer(context, null);
+
+        mTts.setParameter(SpeechConstant.SPEED, "50");//设置语速
+        mTts.setParameter(SpeechConstant.VOLUME, "80");//设置音量，范围0~100
+        mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD); //设置云端
+
     }
 
     @Override
@@ -266,9 +314,9 @@ public class WeatherActivity extends AppCompatActivity {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(mWeatherId!=null&&mCountryName!=null){
+                if (mWeatherId != null && mCountryName != null) {
                     requesWeather(mWeatherId, mCountryName);
-                    Toast.makeText(WeatherActivity.this,"刷新成功",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(WeatherActivity.this, "刷新成功", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -283,14 +331,15 @@ public class WeatherActivity extends AppCompatActivity {
             @Override
             public void onRequestSucess(String result) {
                 swipeRefresh.setRefreshing(false);
-                mWeatherId=weatherId;
+                mWeatherId = weatherId;
                 mCountryName = countryName;
                 SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
                 editor.putString("countryName", countryName);
-                editor.putString("weatherId",weatherId);
+                editor.putString("weatherId", weatherId);
                 editor.putString("json", result);
                 editor.apply();
                 Weather weather = HandleJsonUtil.handleWeatherResponse(result);
+                mWeather = weather;
                 showView(countryName, weather);
             }
 
@@ -366,17 +415,17 @@ public class WeatherActivity extends AppCompatActivity {
             travelText.setText(weather.suggestion.travelIndex.level);
             ultravioletSuggestionText.setText(weather.suggestion.ultravioletRayIndex.level);
             if (!(weather.basic.cityName.equals("西安")) && (!(weather.basic.cityName.equals("河北")))) {
-                airInfo.setText("       "+weather.suggestion.airIndex.info);
+                airInfo.setText("       " + weather.suggestion.airIndex.info);
             } else {
                 airInfo.setText("无数据");
             }
-            comfortInfo.setText("       "+weather.suggestion.comfortIndex.info);
-            carWashInfo.setText("       "+weather.suggestion.carWashIndex.info);
-            dressingInfo.setText("       "+weather.suggestion.dressingIndex.info);
-            influenzaInfo.setText("       "+weather.suggestion.influenzaIndex.info);
-            sportInfo.setText("       "+weather.suggestion.sportIndex.info);
-            travelInfo.setText("       "+weather.suggestion.travelIndex.info);
-            ultravioletSuggestionInfo.setText("       "+weather.suggestion.ultravioletRayIndex.info);
+            comfortInfo.setText("       " + weather.suggestion.comfortIndex.info);
+            carWashInfo.setText("       " + weather.suggestion.carWashIndex.info);
+            dressingInfo.setText("       " + weather.suggestion.dressingIndex.info);
+            influenzaInfo.setText("       " + weather.suggestion.influenzaIndex.info);
+            sportInfo.setText("       " + weather.suggestion.sportIndex.info);
+            travelInfo.setText("       " + weather.suggestion.travelIndex.info);
+            ultravioletSuggestionInfo.setText("       " + weather.suggestion.ultravioletRayIndex.info);
 
         }
 
@@ -461,7 +510,7 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick({R.id.nav_button, R.id.city_add})
+    @OnClick({R.id.nav_button, R.id.city_add, R.id.iv_voice})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.nav_button:
@@ -470,6 +519,64 @@ public class WeatherActivity extends AppCompatActivity {
             case R.id.city_add:
                 Intent intent = new Intent(WeatherActivity.this, CityManageActivity.class);
                 startActivityForResult(intent, REQUEST_CODE);
+                break;
+            case R.id.iv_voice:
+                if (NetStatusUtil.isNetworkAvailable(this)) {
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                    String speaker = prefs.getString("speakerName", "xiaoyan");
+                    //设置发音人
+                    mTts.setParameter(SpeechConstant.VOICE_NAME, speaker); //设置发音人
+                    String forecastContent = getForecastContent();
+                    ivVoice.setBackgroundResource(R.drawable.voice);
+                    final AnimationDrawable imageAnim = (AnimationDrawable) ivVoice.getBackground();
+                    if (!mTts.isSpeaking()) {
+                        imageAnim.start();
+                        mTts.startSpeaking(forecastContent, new SynthesizerListener() {
+                            @Override
+                            public void onSpeakBegin() {
+
+                            }
+
+                            @Override
+                            public void onBufferProgress(int i, int i1, int i2, String s) {
+
+                            }
+
+                            @Override
+                            public void onSpeakPaused() {
+
+                            }
+
+                            @Override
+                            public void onSpeakResumed() {
+
+                            }
+
+                            @Override
+                            public void onSpeakProgress(int i, int i1, int i2) {
+
+                            }
+
+                            @Override
+                            public void onCompleted(SpeechError speechError) {
+                                imageAnim.stop();
+                                ivVoice.setBackgroundResource(R.drawable.voice_selector);
+                            }
+
+                            @Override
+                            public void onEvent(int i, int i1, int i2, Bundle bundle) {
+
+                            }
+                        });
+                    } else {
+                        mTts.stopSpeaking();
+                        imageAnim.stop();
+                        ivVoice.setBackgroundResource(R.drawable.voice_selector);
+                    }
+
+                } else {
+                    Toast.makeText(this, "网络未打开，请打开网络后重试", Toast.LENGTH_SHORT).show();
+                }
                 break;
             default:
                 break;
@@ -498,5 +605,74 @@ public class WeatherActivity extends AppCompatActivity {
                 });
         sDialog.show();
 
+    }
+
+    public String getForecastContent() {
+
+        return getTimeContent() + getWeatherContent();
+
+    }
+
+    private String getWeatherContent() {
+        if (mWeather!=null) {
+            String todayWeather;
+            if (mWeather.forecastList.get(0).condition.weatherDay.equals(mWeather.forecastList.get(0).condition.weatherNight)) {
+                todayWeather = mWeather.forecastList.get(0).condition.weatherDay;
+            } else {
+                todayWeather = mWeather.forecastList.get(0).condition.weatherDay + "转" + mWeather.forecastList.get(0).condition.weatherNight;
+            }
+            String todayTemp = mWeather.forecastList.get(0).temperature.min + "至" + mWeather.forecastList.get(0).temperature.max + "度";
+            String todayWind = mWeather.forecastList.get(0).wind.windDirection + mWeather.forecastList.get(0).wind.windPower + "级";
+            String airQulity=mWeather.aqi.city.qlty;
+            String airAqi=mWeather.aqi.city.aqi;
+
+            if (mCountryName!=null&&mCountryName.equals("中国")){
+
+                return "今天天气," + todayWeather +","+todayTemp +","+todayWind+ ",空气质量指数," +airAqi+ ",空气质量,"+airQulity ;
+            }else {
+                return "今天天气," + todayWeather + "," + todayTemp + ","+todayWind;
+            }
+        }
+        return null;
+    }
+
+    private String getTimeContent() {
+        Calendar c = Calendar.getInstance();//首先要获取日历对象
+        int mYear = c.get(Calendar.YEAR); // 获取当前年份
+        int mMonth = c.get(Calendar.MONTH) + 1;// 获取当前月份
+        int mDay = c.get(Calendar.DAY_OF_MONTH);// 获取当日期
+        int mWeek = c.get(Calendar.DAY_OF_WEEK);// 获取当前日期的星期
+        int mHour = c.get(Calendar.HOUR_OF_DAY);//时
+        int mMinute = c.get(Calendar.MINUTE);//分
+
+        return "今天是" + mYear + "年" + mMonth + "月" + mDay + "日," + getWeek(mWeek) + ","+mHour + "点" + mMinute + "分,";
+    }
+
+    private String getWeek(int week) {
+        String realWeek = null;
+        switch (week) {
+            case 1:
+                realWeek = "星期日";
+                break;
+            case 2:
+                realWeek = "星期一";
+                break;
+            case 3:
+                realWeek = "星期二";
+                break;
+            case 4:
+                realWeek = "星期三";
+                break;
+            case 5:
+                realWeek = "星期四";
+                break;
+            case 6:
+                realWeek = "星期五";
+                break;
+            case 7:
+                realWeek = "星期六";
+                break;
+        }
+        return realWeek;
     }
 }
