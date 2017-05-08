@@ -49,7 +49,8 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
     TextView speaker;
     boolean isUpdateServiceOpen = true;
     boolean isAutoLocationOpen = true;
-
+    private String[] mCloudVoicersEntries;
+    private String[] mCloudVoicersValue ;
     @Override
     protected int getLayoutId() {
         return R.layout.activity_setting;
@@ -70,6 +71,12 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
         } else {
             switchAutoLocation.setChecked(false);
         }
+        // 云端发音人名称列表
+        mCloudVoicersEntries = getResources().getStringArray(R.array.voicer_cloud_entries);
+        mCloudVoicersValue = getResources().getStringArray(R.array.voicer_cloud_values);
+        //初始化发音人
+        String speakerName = prefs.getString("speakerName", "xiaoyan");
+        speaker.setText(speakerName);
     }
 
     @Override
@@ -125,7 +132,7 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
             case R.id.speaker_layout:
                 new MaterialDialog.Builder(this)
                         .title(R.string.speaker_names)
-                        .items(R.array.speakers)
+                        .items(mCloudVoicersEntries)
                         .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
                             @Override
                             public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
@@ -133,8 +140,7 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
                                  * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
                                  * returning false here won't allow the newly selected radio button to actually be selected.
                                  **/
-                                int beginIndex = text.toString().indexOf("x");
-                                String speakerName=text.toString().substring(beginIndex);
+                                String speakerName=mCloudVoicersValue[which];
                                 speaker.setText(speakerName);
                                 SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(SettingActivity.this).edit();
                                 editor.putString("speakerName", speakerName);

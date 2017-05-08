@@ -150,6 +150,8 @@ public class WeatherActivity extends AppCompatActivity {
     private SpeechSynthesizer mTts;
     private static String TAG = WeatherActivity.class.getSimpleName();
     private Weather mWeather;
+    public static final String PREFER_NAME = "com.iflytek.setting";
+    private SharedPreferences mSharedPreferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -267,10 +269,14 @@ public class WeatherActivity extends AppCompatActivity {
     private void initIflyVoice() {
         //1.创建SpeechSynthesizer 对象, 第二个参数：本地合成时传InitListener
         mTts = SpeechSynthesizer.createSynthesizer(context, null);
-
+        mSharedPreferences = getSharedPreferences(PREFER_NAME, MODE_PRIVATE);
         mTts.setParameter(SpeechConstant.SPEED, "50");//设置语速
         mTts.setParameter(SpeechConstant.VOLUME, "80");//设置音量，范围0~100
         mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD); //设置云端
+        //设置播放器音频流类型
+        mTts.setParameter(SpeechConstant.STREAM_TYPE, mSharedPreferences.getString("stream_preference", "3"));
+        // 设置播放合成音频打断音乐播放，默认为true
+        mTts.setParameter(SpeechConstant.KEY_REQUEST_FOCUS, "true");
 
     }
 
@@ -626,11 +632,11 @@ public class WeatherActivity extends AppCompatActivity {
             String airQulity=mWeather.aqi.city.qlty;
             String airAqi=mWeather.aqi.city.aqi;
 
-            if (mCountryName!=null&&mCountryName.equals("中国")){
+            if (mWeatherId!=null&&mCountryName!=null&&mCountryName.equals("中国")){
 
-                return "今天天气," + todayWeather +","+todayTemp +","+todayWind+ ",空气质量指数," +airAqi+ ",空气质量,"+airQulity ;
+                return mWeatherId+",今天天气," + todayWeather +","+todayTemp +","+todayWind+ ",空气质量指数," +airAqi+ ",空气质量,"+airQulity ;
             }else {
-                return "今天天气," + todayWeather + "," + todayTemp + ","+todayWind;
+                return mWeatherId+",今天天气," + todayWeather + "," + todayTemp + ","+todayWind;
             }
         }
         return null;
