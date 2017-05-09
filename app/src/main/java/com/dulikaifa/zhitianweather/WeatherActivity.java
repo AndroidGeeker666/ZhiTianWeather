@@ -150,6 +150,10 @@ public class WeatherActivity extends AppCompatActivity {
     private SpeechSynthesizer mTts;
     private static String TAG = WeatherActivity.class.getSimpleName();
     private Weather mWeather;
+    //默认天气预报员
+    private static final String SPEAKER_NAME = "xiaoyan";
+    private SharedPreferences prefs;
+    private SharedPreferences.Editor editor;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -230,7 +234,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     private void initView() {
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String bingPic = prefs.getString("bing_pic", null);
         if (bingPic != null) {//本地有缓存的必应图片，直接从缓存中加载
             Glide.with(this).load(bingPic).into(bingPicImg);
@@ -259,6 +263,10 @@ public class WeatherActivity extends AppCompatActivity {
                     mCountryName = countryName;
                     Weather weather = HandleJsonUtil.handleWeatherResponse(weatherStr);
                     showView(countryName, weather);
+                    boolean isAutoSpeak = prefs.getBoolean("isAutoSpeak", true);
+                    if (isAutoSpeak){
+                        voiceWeatherForecast();
+                    }
                 }
             }
         }
@@ -297,7 +305,7 @@ public class WeatherActivity extends AppCompatActivity {
         OkHttpUtil.getInstance().getAsync(Url.BINGPIC_URL, new JsonRequestCallback() {
             @Override
             public void onRequestSucess(String result) {
-                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
+                editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
                 editor.putString("bing_pic", result);
                 editor.apply();
                 Glide.with(WeatherActivity.this).load(result).into(bingPicImg);
@@ -333,7 +341,7 @@ public class WeatherActivity extends AppCompatActivity {
                 swipeRefresh.setRefreshing(false);
                 mWeatherId = weatherId;
                 mCountryName = countryName;
-                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
+                editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
                 editor.putString("countryName", countryName);
                 editor.putString("weatherId", weatherId);
                 editor.putString("json", result);
@@ -341,6 +349,11 @@ public class WeatherActivity extends AppCompatActivity {
                 Weather weather = HandleJsonUtil.handleWeatherResponse(result);
                 mWeather = weather;
                 showView(countryName, weather);
+                prefs = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this);
+                boolean isAutoSpeak = prefs.getBoolean("isAutoSpeak", true);
+                if (isAutoSpeak){
+                    voiceWeatherForecast();
+                }
             }
 
             @Override
@@ -369,7 +382,7 @@ public class WeatherActivity extends AppCompatActivity {
                 showCommonInfo(weather);
             }
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            prefs = PreferenceManager.getDefaultSharedPreferences(this);
             boolean isUpdateServiceOpen = prefs.getBoolean("isUpdateServiceOpen", true);
             if (isUpdateServiceOpen) {
                 Intent intent = new Intent(WeatherActivity.this, AutoUpdateService.class);
@@ -521,67 +534,71 @@ public class WeatherActivity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.iv_voice:
-                if (NetStatusUtil.isNetworkAvailable(this)) {
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-                    String speaker = prefs.getString("speakerName", "xiaoyan");
-                    //设置发音人
-                    mTts.setParameter(SpeechConstant.VOICE_NAME, speaker); //设置发音人
-                    String forecastContent = getForecastContent();
-                    ivVoice.setBackgroundResource(R.drawable.voice);
-                    final AnimationDrawable imageAnim = (AnimationDrawable) ivVoice.getBackground();
-                    if (!mTts.isSpeaking()) {
-                        imageAnim.start();
-                        mTts.startSpeaking(forecastContent, new SynthesizerListener() {
-                            @Override
-                            public void onSpeakBegin() {
-
-                            }
-
-                            @Override
-                            public void onBufferProgress(int i, int i1, int i2, String s) {
-
-                            }
-
-                            @Override
-                            public void onSpeakPaused() {
-
-                            }
-
-                            @Override
-                            public void onSpeakResumed() {
-
-                            }
-
-                            @Override
-                            public void onSpeakProgress(int i, int i1, int i2) {
-
-                            }
-
-                            @Override
-                            public void onCompleted(SpeechError speechError) {
-                                imageAnim.stop();
-                                ivVoice.setBackgroundResource(R.drawable.voice_selector);
-                            }
-
-                            @Override
-                            public void onEvent(int i, int i1, int i2, Bundle bundle) {
-
-                            }
-                        });
-                    } else {
-                        mTts.stopSpeaking();
-                        imageAnim.stop();
-                        ivVoice.setBackgroundResource(R.drawable.voice_selector);
-                    }
-
-                } else {
-                    Toast.makeText(this, "网络未打开，请打开网络后重试", Toast.LENGTH_SHORT).show();
-                }
+                voiceWeatherForecast();
                 break;
             default:
                 break;
         }
 
+    }
+
+    private void voiceWeatherForecast() {
+        if (NetStatusUtil.isNetworkAvailable(this)) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            String speaker = prefs.getString("speakerName", SPEAKER_NAME);
+            //设置发音人
+            mTts.setParameter(SpeechConstant.VOICE_NAME, speaker); //设置发音人
+            String forecastContent = getForecastContent();
+            ivVoice.setBackgroundResource(R.drawable.voice);
+            final AnimationDrawable imageAnim = (AnimationDrawable) ivVoice.getBackground();
+            if (!mTts.isSpeaking()&&(forecastContent!=null)) {
+                imageAnim.start();
+                mTts.startSpeaking(forecastContent, new SynthesizerListener() {
+                    @Override
+                    public void onSpeakBegin() {
+
+                    }
+
+                    @Override
+                    public void onBufferProgress(int i, int i1, int i2, String s) {
+
+                    }
+
+                    @Override
+                    public void onSpeakPaused() {
+
+                    }
+
+                    @Override
+                    public void onSpeakResumed() {
+
+                    }
+
+                    @Override
+                    public void onSpeakProgress(int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onCompleted(SpeechError speechError) {
+                        imageAnim.stop();
+                        ivVoice.setBackgroundResource(R.drawable.voice_selector);
+                    }
+
+                    @Override
+                    public void onEvent(int i, int i1, int i2, Bundle bundle) {
+
+                    }
+                });
+            } else {
+                mTts.stopSpeaking();
+                imageAnim.stop();
+                ivVoice.setBackgroundResource(R.drawable.voice_selector);
+            }
+
+        } else {
+            Toast.makeText(this, "网络未打开，请打开网络后重试", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -614,7 +631,7 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private String getWeatherContent() {
-        if (mWeather!=null) {
+        if (mWeather != null) {
             String todayWeather;
             if (mWeather.forecastList.get(0).condition.weatherDay.equals(mWeather.forecastList.get(0).condition.weatherNight)) {
                 todayWeather = mWeather.forecastList.get(0).condition.weatherDay;
@@ -622,18 +639,24 @@ public class WeatherActivity extends AppCompatActivity {
                 todayWeather = mWeather.forecastList.get(0).condition.weatherDay + "转" + mWeather.forecastList.get(0).condition.weatherNight;
             }
             String todayTemp = mWeather.forecastList.get(0).temperature.min + "至" + mWeather.forecastList.get(0).temperature.max + "度";
-            String todayWind = mWeather.forecastList.get(0).wind.windDirection + mWeather.forecastList.get(0).wind.windPower + "级";
-            String airQulity=mWeather.aqi.city.qlty;
-            String airAqi=mWeather.aqi.city.aqi;
+            String todayWind = mWeather.forecastList.get(0).wind.windDirection +","+ getWindPower();
+            String airQulity = mWeather.aqi.city.qlty;
+            String airAqi = mWeather.aqi.city.aqi;
 
-            if (mCountryName!=null&&mCountryName.equals("中国")){
+            if (mCountryName != null && mCountryName.equals("中国")) {
 
-                return "今天天气," + todayWeather +","+todayTemp +","+todayWind+ ",空气质量指数," +airAqi+ ",空气质量,"+airQulity ;
-            }else {
-                return "今天天气," + todayWeather + "," + todayTemp + ","+todayWind;
+                return "今天天气," + todayWeather + "," + todayTemp + "," + todayWind + ",空气质量指数," + airAqi + ",空气质量," + airQulity;
+            } else {
+                return "今天天气," + todayWeather + "," + todayTemp + "," + todayWind;
             }
         }
         return null;
+    }
+
+    private String getWindPower() {
+
+        String windPower=mWeather.forecastList.get(0).wind.windPower;
+        return (windPower.equals("微风"))?windPower:(windPower+"级");
     }
 
     private String getTimeContent() {
@@ -645,7 +668,7 @@ public class WeatherActivity extends AppCompatActivity {
         int mHour = c.get(Calendar.HOUR_OF_DAY);//时
         int mMinute = c.get(Calendar.MINUTE);//分
 
-        return "今天是" + mYear + "年" + mMonth + "月" + mDay + "日," + getWeek(mWeek) + ","+mHour + "点" + mMinute + "分,";
+        return "主人好，现在是" + mYear + "年" + mMonth + "月" + mDay + "日," + getWeek(mWeek) + "," + mHour + "点" + mMinute + "分,";
     }
 
     private String getWeek(int week) {

@@ -47,8 +47,14 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
     RelativeLayout speakerLayout;
     @InjectView(R.id.speaker)
     TextView speaker;
+    @InjectView(R.id.switch_auto_speak)
+    Switch switchAutoSpeak;
     boolean isUpdateServiceOpen = true;
     boolean isAutoLocationOpen = true;
+    boolean isAutoSpeak = true;
+    private String[] mCloudVoicersEntries;
+    private String[] mCloudVoicersValue;
+    private String defSpeakerName="xiaoyu";
 
     @Override
     protected int getLayoutId() {
@@ -70,12 +76,25 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
         } else {
             switchAutoLocation.setChecked(false);
         }
+        isAutoSpeak = prefs.getBoolean("isAutoSpeak", true);
+        if (isAutoSpeak) {
+            switchAutoSpeak.setChecked(true);
+        } else {
+            switchAutoSpeak.setChecked(false);
+        }
+        // 云端发音人名称列表
+        mCloudVoicersEntries = getResources().getStringArray(R.array.voicer_cloud_entries);
+        mCloudVoicersValue = getResources().getStringArray(R.array.voicer_cloud_values);
+        String speakerName = prefs.getString("speakerName", defSpeakerName);
+        speaker.setText(speakerName);
+
     }
 
     @Override
     protected void initListener() {
         switchAutoUpdate.setOnCheckedChangeListener(this);
         switchAutoLocation.setOnCheckedChangeListener(this);
+        switchAutoSpeak.setOnCheckedChangeListener(this);
     }
 
     @Override
@@ -93,7 +112,7 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
         MobclickAgent.onPause(this);
     }
 
-    @OnClick({R.id.btn_back3, R.id.update, R.id.about_layout,R.id.speaker_layout})
+    @OnClick({R.id.btn_back3, R.id.update, R.id.about_layout, R.id.speaker_layout})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_back3:
@@ -112,7 +131,7 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
                         new SweetAlertDialog(SettingActivity.this)
                                 .setTitleText("已是最新版本")
                                 .show();
-//                        Toast.makeText(getApplicationContext(), "已是最新版本", Toast.LENGTH_SHORT).show();
+
                     }
                 }, UPDATE_TIME);
 
@@ -125,7 +144,7 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
             case R.id.speaker_layout:
                 new MaterialDialog.Builder(this)
                         .title(R.string.speaker_names)
-                        .items(R.array.speakers)
+                        .items(mCloudVoicersEntries)
                         .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
                             @Override
                             public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
@@ -133,8 +152,7 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
                                  * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
                                  * returning false here won't allow the newly selected radio button to actually be selected.
                                  **/
-                                int beginIndex = text.toString().indexOf("x");
-                                String speakerName=text.toString().substring(beginIndex);
+                                String speakerName = mCloudVoicersValue[which];
                                 speaker.setText(speakerName);
                                 SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(SettingActivity.this).edit();
                                 editor.putString("speakerName", speakerName);
@@ -198,11 +216,24 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
                     editor.apply();
                 }
                 break;
+            case R.id.switch_auto_speak:
+                if (isChecked) {
+                    isAutoSpeak = true;
+                    Toast.makeText(getApplicationContext(), "自动播报打开！", Toast.LENGTH_SHORT).show();
+                    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+                    editor.putBoolean("isAutoSpeak", true);
+                    editor.apply();
+                } else {
+                    isAutoSpeak = false;
+                    Toast.makeText(getApplicationContext(), "自动播报关闭！", Toast.LENGTH_SHORT).show();
+                    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+                    editor.putBoolean("isAutoSpeak", false);
+                    editor.apply();
+                }
+                break;
+
             default:
                 break;
         }
-
-
     }
-
 }
