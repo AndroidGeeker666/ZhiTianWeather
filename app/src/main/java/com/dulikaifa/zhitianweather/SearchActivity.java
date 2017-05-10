@@ -83,6 +83,7 @@ public class SearchActivity extends BaseActivity {
     private String searchProvinceName;
     private String searchCountryName;
     private SweetAlertDialog pDialog;
+    private String cityName;
 
 
     public void onResume() {
@@ -224,8 +225,8 @@ public class SearchActivity extends BaseActivity {
             Log.d(TAG, results.getResultString());
             printResult(results);
 
-            if (isLast) {
-
+            if (isLast&&cityName!=null) {
+                searchCityWeacherId(getUrl(cityName));
             }
         }
 
@@ -303,6 +304,9 @@ public class SearchActivity extends BaseActivity {
     private RecognizerDialogListener mRecognizerDialogListener = new RecognizerDialogListener() {
         public void onResult(RecognizerResult results, boolean isLast) {
             printResult(results);
+            if (isLast&&cityName!=null) {
+                searchCityWeacherId(getUrl(cityName));
+            }
         }
 
         /**
@@ -331,11 +335,9 @@ public class SearchActivity extends BaseActivity {
         for (String key : mIatResults.keySet()) {
             resultBuffer.append(mIatResults.get(key));
         }
-
         String result=resultBuffer.toString();
+        cityName = result.substring(0, result.length() - 1);
 
-        String cityName=result.substring(0,2);
-        searchCityWeacherId(getUrl(cityName));
 //        tvVoice.setText(result);
         //searchCityWeacherId(result);
     }

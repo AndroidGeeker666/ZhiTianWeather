@@ -116,8 +116,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="120dp"
             android:src="@drawable/voice2_selector"
-            app:civ_border_width="2dp"
-            app:civ_border_color="#FF000000"/>
+            />
 
         <TextView
             android:id="@+id/tv_voice"

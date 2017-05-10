@@ -49,12 +49,14 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
     TextView speaker;
     @InjectView(R.id.switch_auto_speak)
     Switch switchAutoSpeak;
+    @InjectView(R.id.thanks_layout)
+    RelativeLayout thanksLayout;
     boolean isUpdateServiceOpen = true;
     boolean isAutoLocationOpen = true;
     boolean isAutoSpeak = true;
     private String[] mCloudVoicersEntries;
     private String[] mCloudVoicersValue;
-    private String defSpeakerName="xiaoyu";
+    private String defSpeakerName="xiaoyan";
 
     @Override
     protected int getLayoutId() {
@@ -112,7 +114,7 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
         MobclickAgent.onPause(this);
     }
 
-    @OnClick({R.id.btn_back3, R.id.update, R.id.about_layout, R.id.speaker_layout})
+    @OnClick({R.id.btn_back3, R.id.update, R.id.about_layout, R.id.speaker_layout,R.id.thanks_layout})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_back3:
@@ -163,6 +165,16 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
                         .positiveText("确定")
                         .show();
 
+                break;
+            case R.id.thanks_layout:
+                MaterialDialog dialog = new MaterialDialog.Builder(this)
+                        .title(R.string.thanks)
+                        .content(R.string.thanks_content)
+                        .positiveText(R.string.positive)
+                        .show();
+
+                break;
+            default:
                 break;
         }
     }

@@ -172,12 +172,6 @@ public class WeatherActivity extends AppCompatActivity {
 
     }
 
-    private void startSpeakingWeather(String weatherContent) {
-        //3.开始合成
-        mTts.startSpeaking(weatherContent, null);
-
-    }
-
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -359,7 +353,7 @@ public class WeatherActivity extends AppCompatActivity {
             @Override
             public void onRequestFailure(String result) {
                 swipeRefresh.setRefreshing(false);
-                Toast.makeText(WeatherActivity.this, "获取天气信息失败,请检查网络设置!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(WeatherActivity.this, "网络异常,请检查网络设置!", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -455,7 +449,7 @@ public class WeatherActivity extends AppCompatActivity {
             nowWeatherText.setText(weather.now.nowCondition.weather);
             nowWinddirText.setText(weather.now.wind.nowWindDirection);
             nowFeelTemp.setText("体感温度" + weather.now.nowFeelTemperature + "°");
-            nowWindpowerText.setText(weather.now.wind.nowWindPower + "级");
+            nowWindpowerText.setText(getWindPower(weather));
             dynamicLayout.removeAllViews();
             for (int i = 0; i < weather.forecastList.size(); i++) {
                 Forecast forecast = weather.forecastList.get(i);
@@ -505,7 +499,7 @@ public class WeatherActivity extends AppCompatActivity {
                 tempText.setText(forecast.temperature.min + "~" + forecast.temperature.max + "°");
                 winddegText.setText(forecast.wind.windDegree + "°");
                 winddirText.setText(forecast.wind.windDirection);
-                windpowerText.setText(forecast.wind.windPower);
+                windpowerText.setText(getWindPower(weather));
                 windspeedText.setText(forecast.wind.windSpeed + "kmph");
                 humidityText.setText(forecast.humidity + "%");
                 rainProbabilityText.setText(forecast.rainProbability);
@@ -632,30 +626,35 @@ public class WeatherActivity extends AppCompatActivity {
 
     private String getWeatherContent() {
         if (mWeather != null) {
-            String todayWeather;
+
+            String todayWeather=null;
+            String airQulity=null;
+            String airAqi=null;
             if (mWeather.forecastList.get(0).condition.weatherDay.equals(mWeather.forecastList.get(0).condition.weatherNight)) {
                 todayWeather = mWeather.forecastList.get(0).condition.weatherDay;
             } else {
                 todayWeather = mWeather.forecastList.get(0).condition.weatherDay + "转" + mWeather.forecastList.get(0).condition.weatherNight;
             }
             String todayTemp = mWeather.forecastList.get(0).temperature.min + "至" + mWeather.forecastList.get(0).temperature.max + "度";
-            String todayWind = mWeather.forecastList.get(0).wind.windDirection +","+ getWindPower();
-            String airQulity = mWeather.aqi.city.qlty;
-            String airAqi = mWeather.aqi.city.aqi;
+            String todayWind = mWeather.forecastList.get(0).wind.windDirection +","+ getWindPower(mWeather);
+            if (mCountryName.equals("中国")&&(!mWeatherId.equals("西安"))&&(!mWeatherId.equals("河北"))){
+                airQulity = mWeather.aqi.city.qlty;
+                airAqi = mWeather.aqi.city.aqi;
+            }
 
             if (mCountryName != null && mCountryName.equals("中国")) {
 
-                return "今天天气," + todayWeather + "," + todayTemp + "," + todayWind + ",空气质量指数," + airAqi + ",空气质量," + airQulity;
+                return mWeatherId+",今天天气," + todayWeather + "," + todayTemp + "," + todayWind + ",空气质量指数," + airAqi + ",空气质量," + airQulity;
             } else {
-                return "今天天气," + todayWeather + "," + todayTemp + "," + todayWind;
+                return mWeatherId+",今天天气," + todayWeather + "," + todayTemp + "," + todayWind;
             }
         }
         return null;
     }
 
-    private String getWindPower() {
+    private String getWindPower(Weather weather) {
 
-        String windPower=mWeather.forecastList.get(0).wind.windPower;
+        String windPower=weather.forecastList.get(0).wind.windPower;
         return (windPower.equals("微风"))?windPower:(windPower+"级");
     }
 

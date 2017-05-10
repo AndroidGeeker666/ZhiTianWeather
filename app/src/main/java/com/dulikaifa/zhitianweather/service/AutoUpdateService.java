@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
@@ -25,11 +26,12 @@ import com.dulikaifa.zhitianweather.http.Url;
 
 public class AutoUpdateService extends Service {
     private static final long SPLASH_DISPLAY_LENGHT = 4 * 1000;
+    private AutoUpdateBinder mBinder=new AutoUpdateBinder();
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mBinder;
     }
 
     @Override
@@ -45,6 +47,17 @@ public class AutoUpdateService extends Service {
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pi);
         return super.onStartCommand(intent, flags, startId);
     }
+
+
+
+
+    class AutoUpdateBinder extends Binder {
+
+
+
+    }
+
+
 
     private void checkUpdate() {
 

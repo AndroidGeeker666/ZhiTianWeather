@@ -35,4 +35,13 @@
         <item>nannan</item>
         <item>vils</item>
     </string-array>
+    <string name="thanks">鸣谢</string>
+    <string name="thanks_content">本软件使用了以下开源项目或非开源的第三方SDK，有了他们的无私奉献，
+        我们的生活会变得越来越美好，在此对他们的开发者或开发团队表示衷心的感谢！
+        其中语音服务由科大讯飞提供，OkHttp、Glide、Butterknife、Logger、友盟统计、SweetAlertDialog、
+        高德地图、material-dialogs、circleimageview</string>
+    <string name="positive">确定</string>
+    <string name="about">知天天气是一款简洁而实用的天气预报app，支持全球5万多城市未来3天的天气预报，
+        包括32项预报数据，数据精准，体积小巧，占用内存极低，非常好用。</string>
+
 </resources>
