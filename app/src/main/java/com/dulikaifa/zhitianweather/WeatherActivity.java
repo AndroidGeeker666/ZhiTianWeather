@@ -1,6 +1,9 @@
 package com.dulikaifa.zhitianweather;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
@@ -157,6 +160,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
+    private AutoVoiceCastReceiver receiver;
 
 
     @Override
@@ -172,8 +176,29 @@ public class WeatherActivity extends AppCompatActivity {
         ButterKnife.inject(this);
         initView();
         initListener();
+        registerAutoVoiceCastReceiver();
 
     }
+
+    private void registerAutoVoiceCastReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.dulikaifa.zhitianweather");
+        receiver = new AutoVoiceCastReceiver();
+        registerReceiver(receiver,filter);
+
+    }
+
+    class AutoVoiceCastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (mWeatherId!=null&&mCountryName!=null){
+                requesWeather(mWeatherId,mCountryName);
+
+            }
+        }
+    }
+
     private void initIflyVoice() {
         //1.创建SpeechSynthesizer 对象, 第二个参数：本地合成时传InitListener
         mTts = SpeechSynthesizer.createSynthesizer(context, null);
@@ -216,17 +241,6 @@ public class WeatherActivity extends AppCompatActivity {
         FlowerCollector.onPageEnd(TAG);
         FlowerCollector.onPause(WeatherActivity.this);
     }
-    @Override
-    public void onStart() {
-        super.onStart();
-
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-    }
 
     @Override
     protected void onDestroy() {
@@ -237,8 +251,10 @@ public class WeatherActivity extends AppCompatActivity {
             // 退出时释放连接
             mTts.destroy();
         }
+        unregisterReceiver(receiver);
 
     }
+
     //使状态栏透明
     private void transparentStatusBar() {
         if (Build.VERSION.SDK_INT >= 21) {
@@ -280,7 +296,7 @@ public class WeatherActivity extends AppCompatActivity {
                     mWeatherId = weatherId;
                     mCountryName = countryName;
                     Weather weather = HandleJsonUtil.handleWeatherResponse(weatherStr);
-                    mWeather=weather;
+                    mWeather = weather;
                     showView(countryName, weather);
 
                 }
@@ -386,15 +402,15 @@ public class WeatherActivity extends AppCompatActivity {
             }
             prefs = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this);
             boolean isAutoSpeak = prefs.getBoolean("isAutoSpeak", true);
-            if (isAutoSpeak&&mWeather!=null) {
+            if (isAutoSpeak && mWeather != null) {
                 voiceWeatherForecast();
             }
             boolean isUpdateServiceOpen = prefs.getBoolean("isUpdateServiceOpen", true);
-            if (isUpdateServiceOpen){
-                if (ServiceStateUtils.isRunningService(WeatherActivity.this,"com.dulikaifa.zhitianweather.service.AutoUpdateService")){
+            if (isUpdateServiceOpen) {
+                if (ServiceStateUtils.isRunningService(WeatherActivity.this, "com.dulikaifa.zhitianweather.service.AutoUpdateService")) {
                     Toast.makeText(WeatherActivity.this, "AutoUpdateService服务正在运行", Toast.LENGTH_SHORT).show();
 
-                }else {
+                } else {
                     Intent intent = new Intent(this, AutoUpdateService.class);
                     startService(intent);
 
@@ -406,7 +422,6 @@ public class WeatherActivity extends AppCompatActivity {
 
         }
     }
-
 
 
     private void showAllInfo(Weather weather) {
@@ -557,13 +572,14 @@ public class WeatherActivity extends AppCompatActivity {
         }
 
     }
+
     public void voiceWeatherForecast() {
         if (NetStatusUtil.isNetworkAvailable(WeatherActivity.this)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this);
             String speaker = prefs.getString("speakerName", SPEAKER_NAME);
             //设置发音人
             mTts.setParameter(SpeechConstant.VOICE_NAME, speaker); //设置发音人
-            String forecastContent = getForecastContent(mWeather,mWeatherId,mCountryName);
+            String forecastContent = getForecastContent(mWeather, mWeatherId, mCountryName);
             ivVoice.setBackgroundResource(R.drawable.voice);
             final AnimationDrawable imageAnim = (AnimationDrawable) ivVoice.getBackground();
             if (!mTts.isSpeaking() && (forecastContent != null)) {
@@ -571,7 +587,7 @@ public class WeatherActivity extends AppCompatActivity {
                 mTts.startSpeaking(forecastContent, new SynthesizerListener() {
                     @Override
                     public void onSpeakBegin() {
-                         imageAnim.start();
+                        imageAnim.start();
                     }
 
                     @Override
@@ -597,8 +613,8 @@ public class WeatherActivity extends AppCompatActivity {
                     @Override
                     public void onCompleted(SpeechError speechError) {
 
-                         imageAnim.stop();
-                         ivVoice.setBackgroundResource(R.drawable.voice_selector);
+                        imageAnim.stop();
+                        ivVoice.setBackgroundResource(R.drawable.voice_selector);
                     }
 
                     @Override
@@ -619,13 +635,13 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
 
-    public String getForecastContent(Weather weather,String mWeatherId,String mCountryName) {
+    public String getForecastContent(Weather weather, String mWeatherId, String mCountryName) {
 
-        return getTimeContent() + getWeatherContent(weather,mWeatherId,mCountryName);
+        return getTimeContent() + getWeatherContent(weather, mWeatherId, mCountryName);
 
     }
 
-    private String getWeatherContent(Weather weather,String mWeatherId,String mCountryName) {
+    private String getWeatherContent(Weather weather, String mWeatherId, String mCountryName) {
         if (weather != null) {
 
             String todayWeather = null;
@@ -700,7 +716,6 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     public void onBackPressed() {
 
@@ -718,7 +733,7 @@ public class WeatherActivity extends AppCompatActivity {
                     @Override
                     public void onClick(SweetAlertDialog sweetAlertDialog) {
                         WeatherActivity.super.onBackPressed();
-                        sDialog=null;
+                        sDialog = null;
                     }
                 });
         sDialog.show();

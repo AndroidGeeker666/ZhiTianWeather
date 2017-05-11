@@ -121,6 +121,37 @@
             android:textOn="自动播报打开" />
 
     </RelativeLayout>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
+    <RelativeLayout
+        android:id="@+id/timing_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/item_bg_selector"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/timing_speaker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:text="定时播报"
+            android:textColor="#000"
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="19dp"
+            android:src="@mipmap/rightarrow" />
+
+    </RelativeLayout>
 
     <Space
         android:layout_width="match_parent"

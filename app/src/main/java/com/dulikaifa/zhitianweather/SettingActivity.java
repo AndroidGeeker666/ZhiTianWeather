@@ -54,9 +54,12 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
     boolean isUpdateServiceOpen = true;
     boolean isAutoLocationOpen = true;
     boolean isAutoSpeak = true;
+    @InjectView(R.id.timing_layout)
+    RelativeLayout timingLayout;
     private String[] mCloudVoicersEntries;
     private String[] mCloudVoicersValue;
-    private String defSpeakerName="小燕";
+
+
 
     @Override
     protected int getLayoutId() {
@@ -87,8 +90,8 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
         // 云端发音人名称列表
         mCloudVoicersEntries = getResources().getStringArray(R.array.voicer_cloud_entries);
         mCloudVoicersValue = getResources().getStringArray(R.array.voicer_cloud_values);
-        int which = prefs.getInt("which",0);
-        speaker.setText(mCloudVoicersEntries[which].substring(0,2));
+        int which = prefs.getInt("which", 0);
+        speaker.setText(mCloudVoicersEntries[which].substring(0, 2));
 
     }
 
@@ -114,7 +117,7 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
         MobclickAgent.onPause(this);
     }
 
-    @OnClick({R.id.btn_back3, R.id.update, R.id.about_layout, R.id.speaker_layout,R.id.thanks_layout})
+    @OnClick({R.id.btn_back3, R.id.update, R.id.about_layout, R.id.speaker_layout, R.id.thanks_layout,R.id.timing_layout})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_back3:
@@ -155,15 +158,15 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
                                  * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
                                  * returning false here won't allow the newly selected radio button to actually be selected.
                                  **/
-                                if (which==-1){
+                                if (which == -1) {
                                     Toast.makeText(getApplicationContext(), "您没有选择任何其他人！", Toast.LENGTH_SHORT).show();
                                     return false;
-                                }else {
-                                    Toast.makeText(getApplicationContext(), "您选择的是："+mCloudVoicersEntries[which], Toast.LENGTH_SHORT).show();
-                                    speaker.setText(mCloudVoicersEntries[which].substring(0,2));
-                                    String speakerName=mCloudVoicersValue[which];
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "您选择的是：" + mCloudVoicersEntries[which], Toast.LENGTH_SHORT).show();
+                                    speaker.setText(mCloudVoicersEntries[which].substring(0, 2));
+                                    String speakerName = mCloudVoicersValue[which];
                                     SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(SettingActivity.this).edit();
-                                    editor.putInt("which",which);
+                                    editor.putInt("which", which);
                                     editor.putString("speakerName", speakerName);
                                     editor.apply();
                                     return true;
@@ -182,6 +185,11 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
                         .content(R.string.thanks_content)
                         .positiveText(R.string.positive)
                         .show();
+
+                break;
+            case R.id.timing_layout:
+                Intent intent6 = new Intent(SettingActivity.this, AlarmActivity.class);
+                startActivity(intent6);
 
                 break;
             default:
@@ -258,4 +266,6 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
                 break;
         }
     }
+
+
 }

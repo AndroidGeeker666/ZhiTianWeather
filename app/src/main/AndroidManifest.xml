@@ -54,7 +54,9 @@
         <activity android:name=".AboutActivity"/>
         <activity android:name=".SettingActivity"/>
         <activity android:name=".SearchActivity"/>
+        <activity android:name=".AlarmActivity"/>
         <service android:name=".service.AutoUpdateService"/>
+
 
         <meta-data
             android:name="IFLYTEK_APPKEY"
