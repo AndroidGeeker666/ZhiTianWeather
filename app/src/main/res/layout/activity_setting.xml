@@ -158,7 +158,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toStartOf="@id/imageView2"
-            android:text="xiaoyan"
+            android:text="小燕"
             android:textColor="@color/black"
             android:textSize="20sp" />
 

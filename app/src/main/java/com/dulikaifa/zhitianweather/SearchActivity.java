@@ -1,8 +1,11 @@
 package com.dulikaifa.zhitianweather;
 
+import android.Manifest;
 import android.content.Intent;
-import android.os.Bundle;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -21,7 +24,6 @@ import com.dulikaifa.zhitianweather.http.Url;
 import com.dulikaifa.zhitianweather.util.JsonParser;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
-import com.iflytek.cloud.RecognizerListener;
 import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechRecognizer;
@@ -116,6 +118,7 @@ public class SearchActivity extends BaseActivity {
         // 使用UI听写功能，请根据sdk文件目录下的notice.txt,放置布局文件和图片资源
         mIatDialog = new RecognizerDialog(SearchActivity.this, mInitListener);
     }
+
     /**
      * 初始化监听器。
      */
@@ -129,6 +132,7 @@ public class SearchActivity extends BaseActivity {
             }
         }
     };
+
     @Override
     protected void initListener() {
         editSearch.addTextChangedListener(textWatcher);
@@ -193,60 +197,61 @@ public class SearchActivity extends BaseActivity {
 //        mIat.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageDirectory()+"/msc/iat.wav");
 //
 //    }
-    /**
-     * 听写监听器。
-     */
-    private RecognizerListener mRecognizerListener = new RecognizerListener() {
+//    /**
+//     * 听写监听器。
+//     */
+//    private RecognizerListener mRecognizerListener = new RecognizerListener() {
+//
+//        @Override
+//        public void onBeginOfSpeech() {
+//            // 此回调表示：sdk内部录音机已经准备好了，用户可以开始语音输入
+//            Toast.makeText(SearchActivity.this, "开始说话", Toast.LENGTH_SHORT).show();
+//        }
+//
+//        @Override
+//        public void onError(SpeechError error) {
+//            // Tips：
+//            // 错误码：10118(您没有说话)，可能是录音机权限被禁，需要提示用户打开应用的录音权限。
+//            // 如果使用本地功能（语记）需要提示用户开启语记的录音权限。
+//
+//            Toast.makeText(SearchActivity.this, error.getPlainDescription(true), Toast.LENGTH_SHORT).show();
+//        }
+//
+//        @Override
+//        public void onEndOfSpeech() {
+//            // 此回调表示：检测到了语音的尾端点，已经进入识别过程，不再接受语音输入
+//
+//            Toast.makeText(SearchActivity.this, "结束说话", Toast.LENGTH_SHORT).show();
+//        }
+//
+//        @Override
+//        public void onResult(RecognizerResult results, boolean isLast) {
+//            Log.d(TAG, results.getResultString());
+//            printResult(results);
+//
+//            if (isLast && cityName != null) {
+//                searchCityWeacherId(getUrl(cityName));
+//            }
+//        }
 
-        @Override
-        public void onBeginOfSpeech() {
-            // 此回调表示：sdk内部录音机已经准备好了，用户可以开始语音输入
-            Toast.makeText(SearchActivity.this, "开始说话", Toast.LENGTH_SHORT).show();
-        }
+//        @Override
+//        public void onVolumeChanged(int volume, byte[] data) {
+//            Toast.makeText(SearchActivity.this, "当前正在说话，音量大小：" + volume, Toast.LENGTH_SHORT).show();
+//
+//        }
+//
+//        @Override
+//        public void onEvent(int eventType, int arg1, int arg2, Bundle obj) {
+//            // 以下代码用于获取与云端的会话id，当业务出错时将会话id提供给技术支持人员，可用于查询会话日志，定位出错原因
+//            // 若使用本地能力，会话id为null
+//            //	if (SpeechEvent.EVENT_SESSION_ID == eventType) {
+//            //		String sid = obj.getString(SpeechEvent.KEY_EVENT_SESSION_ID);
+//            //		Log.d(TAG, "session id =" + sid);
+//            //	}
+//        }
+//    };
 
-        @Override
-        public void onError(SpeechError error) {
-            // Tips：
-            // 错误码：10118(您没有说话)，可能是录音机权限被禁，需要提示用户打开应用的录音权限。
-            // 如果使用本地功能（语记）需要提示用户开启语记的录音权限。
-
-            Toast.makeText(SearchActivity.this, error.getPlainDescription(true), Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onEndOfSpeech() {
-            // 此回调表示：检测到了语音的尾端点，已经进入识别过程，不再接受语音输入
-
-            Toast.makeText(SearchActivity.this, "结束说话", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onResult(RecognizerResult results, boolean isLast) {
-            Log.d(TAG, results.getResultString());
-            printResult(results);
-
-            if (isLast&&cityName!=null) {
-                searchCityWeacherId(getUrl(cityName));
-            }
-        }
-
-        @Override
-        public void onVolumeChanged(int volume, byte[] data) {
-            Toast.makeText(SearchActivity.this, "当前正在说话，音量大小：" + volume, Toast.LENGTH_SHORT).show();
-
-        }
-
-        @Override
-        public void onEvent(int eventType, int arg1, int arg2, Bundle obj) {
-            // 以下代码用于获取与云端的会话id，当业务出错时将会话id提供给技术支持人员，可用于查询会话日志，定位出错原因
-            // 若使用本地能力，会话id为null
-            //	if (SpeechEvent.EVENT_SESSION_ID == eventType) {
-            //		String sid = obj.getString(SpeechEvent.KEY_EVENT_SESSION_ID);
-            //		Log.d(TAG, "session id =" + sid);
-            //	}
-        }
-    };
-    @OnClick({R.id.btn_back2, R.id.btn_search, R.id.ll_search, R.id.iv_search_clear,R.id.voice2_img})
+    @OnClick({R.id.btn_back2, R.id.btn_search, R.id.ll_search, R.id.iv_search_clear, R.id.voice2_img})
     public void onClick(View view) {
         String cityName = editSearch.getText().toString().trim();
         switch (view.getId()) {
@@ -276,15 +281,14 @@ public class SearchActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.voice2_img:
-                // 移动数据分析，收集开始听写事件
-                FlowerCollector.onEvent(this, "iat_recognize");
-                mIatResults.clear();
-                //setParams();
-                // 显示听写对话框
-                mIatDialog.setListener(mRecognizerDialogListener);
-                mIatDialog.show();
-                Toast.makeText(this,"请开始说话...",Toast.LENGTH_LONG).show();
+                if (ContextCompat.checkSelfPermission(SearchActivity.this, Manifest.permission.RECORD_AUDIO
+                ) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(SearchActivity.this,
+                            new String[]{Manifest.permission.RECORD_AUDIO}, 1);
 
+                } else {
+                    startListenToWrite();
+                }
                 break;
             default:
 
@@ -293,6 +297,31 @@ public class SearchActivity extends BaseActivity {
 
     }
 
+    private void startListenToWrite() {
+        // 移动数据分析，收集开始听写事件
+        FlowerCollector.onEvent(this, "iat_recognize");
+        mIatResults.clear();
+        //setParams();
+        // 显示听写对话框
+        mIatDialog.setListener(mRecognizerDialogListener);
+        mIatDialog.show();
+        Toast.makeText(this, "请开始说话...", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                    // 移动数据分析，收集开始听写事件
+                    startListenToWrite();
+                }else {
+                    Toast.makeText(this,"你拒绝授予录音权限,将不能使用语音搜索功能",Toast.LENGTH_SHORT).show();
+                    setContentView(R.layout.activity_main);
+                }
+                break;
+        }
+    }
     @NonNull
     private String getUrl(String cityName) {
         return Url.SEARCH_CITY_URL + "?city=" + cityName + "&key=" + Url.APP_KEY;
@@ -304,7 +333,7 @@ public class SearchActivity extends BaseActivity {
     private RecognizerDialogListener mRecognizerDialogListener = new RecognizerDialogListener() {
         public void onResult(RecognizerResult results, boolean isLast) {
             printResult(results);
-            if (isLast&&cityName!=null) {
+            if (isLast && cityName != null) {
                 searchCityWeacherId(getUrl(cityName));
             }
         }
@@ -313,10 +342,13 @@ public class SearchActivity extends BaseActivity {
          * 识别回调错误.
          */
         public void onError(SpeechError error) {
-            Toast.makeText(SearchActivity.this,error.getPlainDescription(true),Toast.LENGTH_LONG).show();
+            String plainDescription = error.getPlainDescription(true);
+
+            Toast.makeText(SearchActivity.this, error.getPlainDescription(true), Toast.LENGTH_LONG).show();
         }
 
     };
+
     private void printResult(RecognizerResult results) {
         String text = JsonParser.parseIatResult(results.getResultString());
 
@@ -335,7 +367,7 @@ public class SearchActivity extends BaseActivity {
         for (String key : mIatResults.keySet()) {
             resultBuffer.append(mIatResults.get(key));
         }
-        String result=resultBuffer.toString();
+        String result = resultBuffer.toString();
         cityName = result.substring(0, result.length() - 1);
 
 //        tvVoice.setText(result);
@@ -385,11 +417,11 @@ public class SearchActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if( null != mIat ){
+        if (null != mIat) {
             // 退出时释放连接
             mIat.cancel();
             mIat.destroy();
-            pDialog=null;
+            pDialog = null;
         }
     }
 }

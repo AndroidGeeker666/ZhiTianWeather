@@ -56,7 +56,7 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
     boolean isAutoSpeak = true;
     private String[] mCloudVoicersEntries;
     private String[] mCloudVoicersValue;
-    private String defSpeakerName="xiaoyan";
+    private String defSpeakerName="小燕";
 
     @Override
     protected int getLayoutId() {
@@ -87,8 +87,8 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
         // 云端发音人名称列表
         mCloudVoicersEntries = getResources().getStringArray(R.array.voicer_cloud_entries);
         mCloudVoicersValue = getResources().getStringArray(R.array.voicer_cloud_values);
-        String speakerName = prefs.getString("speakerName", defSpeakerName);
-        speaker.setText(speakerName);
+        int which = prefs.getInt("which",0);
+        speaker.setText(mCloudVoicersEntries[which].substring(0,2));
 
     }
 
@@ -144,6 +144,7 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
                 startActivity(intent);
                 break;
             case R.id.speaker_layout:
+
                 new MaterialDialog.Builder(this)
                         .title(R.string.speaker_names)
                         .items(mCloudVoicersEntries)
@@ -154,16 +155,25 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
                                  * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
                                  * returning false here won't allow the newly selected radio button to actually be selected.
                                  **/
-                                String speakerName = mCloudVoicersValue[which];
-                                speaker.setText(speakerName);
-                                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(SettingActivity.this).edit();
-                                editor.putString("speakerName", speakerName);
-                                editor.apply();
-                                return true;
+                                if (which==-1){
+                                    Toast.makeText(getApplicationContext(), "您没有选择任何其他人！", Toast.LENGTH_SHORT).show();
+                                    return false;
+                                }else {
+                                    Toast.makeText(getApplicationContext(), "您选择的是："+mCloudVoicersEntries[which], Toast.LENGTH_SHORT).show();
+                                    speaker.setText(mCloudVoicersEntries[which].substring(0,2));
+                                    String speakerName=mCloudVoicersValue[which];
+                                    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(SettingActivity.this).edit();
+                                    editor.putInt("which",which);
+                                    editor.putString("speakerName", speakerName);
+                                    editor.apply();
+                                    return true;
+
+                                }
                             }
                         })
                         .positiveText("确定")
                         .show();
+
 
                 break;
             case R.id.thanks_layout:
