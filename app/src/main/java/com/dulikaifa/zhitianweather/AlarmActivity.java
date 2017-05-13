@@ -131,7 +131,7 @@ public class AlarmActivity extends BaseActivity {
                 AlarmData ad = new AlarmData(calendar.getTimeInMillis());
                 adapter.add(ad);
                 //每添加一个闹钟，就设置一个系统闹钟
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, ad.getTime(), 24 * 60 * 60 * 1000,
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, ad.getTime(), 60* 60 * 1000,
                         //PendingIntent是一个挂起的intent，在以后某时刻启动
                         PendingIntent.getBroadcast(AlarmActivity.this, ad.getId(), new Intent(new Intent("com.dulikaifa.zhitianweather")), 0));
                 //保存闹钟设置的时间

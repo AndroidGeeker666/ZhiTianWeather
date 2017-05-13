@@ -163,6 +163,7 @@ public class WeatherActivity extends AppCompatActivity {
     private AutoVoiceCastReceiver receiver;
 
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -188,13 +189,15 @@ public class WeatherActivity extends AppCompatActivity {
 
     }
 
+
+
     class AutoVoiceCastReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             if (mWeatherId!=null&&mCountryName!=null){
                 requesWeather(mWeatherId,mCountryName);
-
+                Toast.makeText(WeatherActivity.this, "定时任务执行了！", Toast.LENGTH_SHORT).show();
             }
         }
     }

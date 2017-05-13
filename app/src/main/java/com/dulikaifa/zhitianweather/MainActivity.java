@@ -7,10 +7,9 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -29,7 +28,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import me.weyye.hipermission.HiPermission;
+import me.weyye.hipermission.PermissionCallback;
+import me.weyye.hipermission.PermissonItem;
 
 import static com.dulikaifa.zhitianweather.R.id.location_btn;
 import static com.dulikaifa.zhitianweather.R.id.location_layout;
@@ -93,14 +98,20 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void showToast(String text) {
+        Toast.makeText(MyApplication.getContext(), text, Toast.LENGTH_SHORT).show();
+    }
+
     private void location() {
         if (NetStatusUtil.isNetworkAvailable(this)) {
 
+
             if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED) {
+                requestPermission();
 
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+//                ActivityCompat.requestPermissions(MainActivity.this,
+//                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 
             } else {
 
@@ -149,22 +160,60 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case 1:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    dialog();
-                    //初始化定位
-                    initLocation();
-                    startLocation();
-                } else {
-                    Toast.makeText(this, "你拒绝授予位置访问权限,将不能自动定位,请自己选择城市", Toast.LENGTH_SHORT).show();
-                    setContentView(R.layout.activity_main);
-                }
-                break;
-        }
+    private void requestPermission() {
+        List<PermissonItem> permissonItems = new ArrayList<>();
+        permissonItems.add(new PermissonItem(Manifest.permission.ACCESS_COARSE_LOCATION,
+                getString(R.string.permission_cus_item_location), R.drawable.ic_live_main_location));
+        HiPermission.create(MainActivity.this)
+                .title(getString(R.string.permission_cus_title))
+                .permissions(permissonItems)
+                .filterColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, getTheme()))
+                .msg(getString(R.string.permission_cus_msg))
+                .style(R.style.PermissionBlueStyle)
+                .checkMutiPermission(new PermissionCallback() {
+                    @Override
+                    public void onClose() {
+                        showToast(getString(R.string.permission_be_concelled));
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        //showToast(getString(R.string.permission_be_completed));
+                    }
+
+                    @Override
+                    public void onDeny(String permisson, int position) {
+                        showToast(getString(R.string.permission_be_dennied));
+                    }
+
+                    @Override
+                    public void onGuarantee(String permisson, int position) {
+                        showToast(getString(R.string.permission_be_granted));
+                        dialog();
+                        //初始化定位
+                        initLocation();
+                        startLocation();
+                    }
+                });
+
     }
+
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        switch (requestCode) {
+//            case 1:
+//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    dialog();
+//                    //初始化定位
+//                    initLocation();
+//                    startLocation();
+//                } else {
+//                    Toast.makeText(this, "你拒绝授予位置访问权限,将不能自动定位,请自己选择城市", Toast.LENGTH_SHORT).show();
+//                    setContentView(R.layout.activity_main);
+//                }
+//                break;
+//        }
+//    }
 
 
     private void dialog() {
