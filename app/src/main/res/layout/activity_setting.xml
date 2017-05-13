@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="#D8F5F3"
-              android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:background="#D8F5F3"
+    android:orientation="vertical"
 
     >
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
@@ -18,16 +19,16 @@
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_marginStart="10dp"
-            android:background="@mipmap/ic_back"/>
+            android:background="@mipmap/ic_back" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="设置"
-            android:textStyle="bold"
             android:textColor="#fff"
-            android:textSize="22sp"/>
+            android:textSize="22sp"
+            android:textStyle="bold" />
 
     </RelativeLayout>
 
@@ -35,18 +36,16 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@android:color/white"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
             android:layout_centerVertical="true"
+            android:layout_marginStart="15dp"
             android:text="自动更新"
             android:textColor="#000"
-            android:textSize="20sp"
-            />
+            android:textSize="20sp" />
 
         <Switch
             android:id="@+id/switch_auto_update"
@@ -58,27 +57,27 @@
             android:checked="true"
             android:padding="10dp"
             android:textOff="自动更新关闭"
-            android:textOn="自动更新打开"/>
+            android:textOn="自动更新打开" />
     </RelativeLayout>
+
     <Space
         android:layout_width="match_parent"
-        android:layout_height="1dp"/>
+        android:layout_height="1dp" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@android:color/white"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
             android:text="自动定位"
             android:textColor="#000"
-            android:textSize="20sp"
-            />
+            android:textSize="20sp" />
 
         <Switch
             android:id="@+id/switch_auto_location"
@@ -90,39 +89,99 @@
             android:checked="true"
             android:padding="10dp"
             android:textOff="自动更新关闭"
-            android:textOn="自动更新打开"/>
+            android:textOn="自动更新打开" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@android:color/white"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:text="自动播报"
+            android:textColor="#000"
+            android:textSize="20sp" />
+
+        <Switch
+            android:id="@+id/switch_auto_speak"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="10dp"
+            android:checked="true"
+            android:padding="10dp"
+            android:textOff="自动播报关闭"
+            android:textOn="自动播报打开" />
 
     </RelativeLayout>
     <Space
         android:layout_width="match_parent"
-        android:layout_height="1dp"/>
+        android:layout_height="1dp" />
+
+    <RelativeLayout
+        android:id="@+id/timing_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/item_bg_selector"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/timing_speaker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:text="定时播报"
+            android:textColor="#000"
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="19dp"
+            android:src="@mipmap/rightarrow" />
+
+    </RelativeLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
     <RelativeLayout
         android:id="@+id/speaker_layout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@drawable/item_bg_selector"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/select_speaker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
             android:text="选择天气预报员"
             android:textColor="#000"
-            android:textSize="20sp"
-            />
+            android:textSize="20sp" />
 
         <ImageView
             android:id="@+id/imageView2"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginEnd="19dp"
-            android:src="@mipmap/arrow_down"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_marginEnd="19dp"
+            android:src="@mipmap/rightarrow" />
 
         <TextView
             android:id="@+id/speaker"
@@ -130,32 +189,33 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toStartOf="@id/imageView2"
-            android:text="xiaoyan"
+            android:text="小燕"
             android:textColor="@color/black"
-            android:textSize="20sp"
-            />
+            android:textSize="20sp" />
 
 
     </RelativeLayout>
+
     <Space
         android:layout_width="match_parent"
-        android:layout_height="1dp"/>
+        android:layout_height="1dp" />
+
     <RelativeLayout
         android:id="@+id/update"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@drawable/item_bg_selector"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
             android:text="检测新版本"
             android:textColor="#000"
-            android:textSize="20sp"
-            />
+            android:textSize="20sp" />
+
         <TextView
             android:id="@+id/tv_version"
             android:layout_width="wrap_content"
@@ -163,34 +223,54 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="15dp"
-            android:text="v1.5"
+            android:text="v2.0"
             android:textColor="#000"
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
 
 
     </RelativeLayout>
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="1dp"/>
+        android:layout_height="1dp" />
 
     <RelativeLayout
         android:id="@+id/about_layout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@drawable/item_bg_selector"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="15dp"
+            android:layout_marginStart="14dp"
             android:text="关于"
             android:textColor="#000"
-            android:textSize="20sp"
-            android:layout_centerVertical="true"
+            android:textSize="20sp" />
+    </RelativeLayout>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+    <RelativeLayout
+        android:id="@+id/thanks_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/item_bg_selector"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_marginStart="14dp" />
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="14dp"
+            android:text="鸣谢"
+            android:textColor="#000"
+            android:textSize="20sp" />
     </RelativeLayout>
 </LinearLayout>

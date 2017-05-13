@@ -11,11 +11,9 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
-
 import com.dulikaifa.zhitianweather.http.JsonRequestCallback;
 import com.dulikaifa.zhitianweather.http.OkHttpUtil;
 import com.dulikaifa.zhitianweather.http.Url;
-
 /**
  * Author:李晓峰 on 2017/4/23 16:57
  * E-mail:chaate@163.com
@@ -26,6 +24,8 @@ import com.dulikaifa.zhitianweather.http.Url;
 public class AutoUpdateService extends Service {
     private static final long SPLASH_DISPLAY_LENGHT = 4 * 1000;
 
+    private boolean isFirstTime=false;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -34,17 +34,21 @@ public class AutoUpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
         Toast.makeText(AutoUpdateService.this, "天气自动更新服务开启成功", Toast.LENGTH_SHORT).show();
-        checkUpdate();
+        if (!isFirstTime){
+            checkUpdate();
+        }
+        isFirstTime=true;
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
         int anHour = 60 * 60 * 1000;
         long triggerAtTime = SystemClock.elapsedRealtime() + anHour;
         Intent i = new Intent(this, AutoUpdateService.class);
         PendingIntent pi = PendingIntent.getService(this, 0, i, 0);
-        manager.cancel(pi);
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pi);
         return super.onStartCommand(intent, flags, startId);
     }
+
 
     private void checkUpdate() {
 
@@ -77,12 +81,14 @@ public class AutoUpdateService extends Service {
     private void updateWeather() {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String weatherId = prefs.getString("weatherId", null);
+        final String weatherId = prefs.getString("weatherId", null);
+        final String countryName = prefs.getString("countryName", null);
         if (weatherId != null) {
             String weatherUrl = Url.WEATHER_Url + "?city=" + weatherId + "&key=" + Url.APP_KEY;
             OkHttpUtil.getInstance().getAsync(weatherUrl, new JsonRequestCallback() {
                 @Override
                 public void onRequestSucess(String result) {
+
                     SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(AutoUpdateService.this).edit();
                     editor.putString("json", result);
                     editor.apply();
@@ -95,4 +101,6 @@ public class AutoUpdateService extends Service {
             });
         }
     }
+
+
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:background="#D8F5F3"
               android:orientation="vertical">
@@ -73,9 +74,9 @@
             android:id="@+id/btn_search"
             style="@android:style/Widget.Button.Small"
             android:layout_width="70dp"
-            android:layout_height="38dp"
+            android:layout_height="34dp"
             android:layout_gravity="center"
-            android:layout_marginEnd="4dp"
+            android:layout_marginEnd="6dp"
             android:background="@drawable/btn_bg_selector"
             android:text="搜索"
             android:textColor="@android:color/white"
@@ -99,8 +100,35 @@
             android:text="魏县"
             android:textColor="#000"
             android:textSize="18dp"
-            android:visibility="gone"
+            android:visibility="invisible"
             />
     </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/voice2_img"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="120dp"
+            android:src="@drawable/voice2_selector"
+            />
+
+        <TextView
+            android:id="@+id/tv_voice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:text="语音搜索城市天气，解放你双手"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
 
 </LinearLayout>
