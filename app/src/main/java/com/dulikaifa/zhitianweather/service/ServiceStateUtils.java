@@ -6,6 +6,7 @@ import android.content.Context;
 
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class ServiceStateUtils {
 	
 	public static boolean isRunningService(Context context , String serviceName){

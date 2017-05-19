@@ -14,6 +14,7 @@ import me.weyye.hipermission.PermissonItem;
 
 
 /**
+ *
  * Created by hasee on 2017/5/12.
  */
 
@@ -21,7 +22,7 @@ public class PermissionCheckUtil {
 
     public static int checkRuntimePermissin(final Context context, String permissionName, int customPermissionNameRes, int cutomDrawableRes ){
         final int[] result = new int[1];
-        List<PermissonItem> permissonItems = new ArrayList<PermissonItem>();
+        List<PermissonItem> permissonItems = new ArrayList<>();
         permissonItems.add(new PermissonItem(permissionName, context.getString(customPermissionNameRes),cutomDrawableRes));
         HiPermission.create(context)
                 .title(context.getString(R.string.permission_cus_title))

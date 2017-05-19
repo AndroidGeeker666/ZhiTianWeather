@@ -18,14 +18,26 @@ import java.util.List;
  */
 
 public class CityNameDbDao {
-
+    /**
+     * 数据库创建帮助类
+     */
     private CityNameDbHelper helper;
+    /**
+     * 实体类集合
+     */
     private List<CityBean> list = null;
 
-    public CityNameDbDao(Context context) {
+    /**
+     * 构造方法
+     * @param context 传入的上下文
+     */
+    public CityNameDbDao(final Context context) {
         helper = new CityNameDbHelper(context);
     }
 
+    /**
+     * 查询所有数据
+     */
     public List<CityBean> findAll() {
         SQLiteDatabase db = helper.getWritableDatabase();
         if (list == null) {
@@ -43,26 +55,35 @@ public class CityNameDbDao {
                 list.add(bean);
             }
         }
-        if(cursor!=null){
+        if (cursor != null) {
+
             cursor.close();
         }
         db.close();
         return list;
     }
 
-    public void add(CityBean bean) {
+    /**
+     * 向数据库中添加一条数据
+     * @param bean 实体类对象
+     */
+    public void add(final CityBean bean) {
 
         SQLiteDatabase db = helper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("cityname", bean.getCityName());
         values.put("countryname", bean.getCountryName());
-        long result = db.insert("cityname", null, values);  //原理底层 也是在组拼sql语句
+        db.insert("cityname", null, values);  //原理底层 也是在组拼sql语句
         db.close();
     }
 
-    public void delete(CityBean bean) {
+    /**
+     *
+     * @param bean 实体类对象
+     */
+    public void delete(final CityBean bean) {
         SQLiteDatabase db = helper.getWritableDatabase();
-        long result = db.delete("cityname", "cityname=?", new String[]{bean.getCityName()});
+        db.delete("cityname", "cityname=?", new String[]{bean.getCityName()});
         db.close();
     }
 }

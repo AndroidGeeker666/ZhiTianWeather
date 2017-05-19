@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
     private AMapLocationClient locationClient = null;
     private AMapLocationClientOption locationOption = null;
     private FrameLayout locationLayout;
-    private Button locationBtn;
     private SweetAlertDialog sDialog;
 
     @Override
@@ -67,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadDataFromCache(String weatherJson) {
 
-        JSONObject jsonObject = null;
+        JSONObject jsonObject;
         try {
             jsonObject = new JSONObject(weatherJson);
             JSONArray heWeather5 = jsonObject.getJSONArray("HeWeather5");
@@ -89,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_fresh);
         locationLayout = (FrameLayout) findViewById(location_layout);
         locationLayout.setVisibility(View.GONE);
-        locationBtn = (Button) findViewById(location_btn);
+        Button locationBtn = (Button) findViewById(location_btn);
         locationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -344,12 +343,12 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 销毁定位
      *
-     * @author hongming.wang
-     * @since 2.8.0
+     *
+     *
      */
     private void destroyLocation() {
         if (null != locationClient) {
-            /**
+            /*
              * 如果AMapLocationClient是在当前Activity实例化的，
              * 在Activity的onDestroy中一定要执行AMapLocationClient的onDestroy
              */

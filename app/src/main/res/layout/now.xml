@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/now_layout"
     android:layout_width="match_parent"
     android:layout_height="510dp"
@@ -19,7 +20,7 @@
             android:layout_height="100dp"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="100dp"
-            android:text="18°"
+            android:text=""
             android:textColor="@color/basic"
             android:textSize="70sp" />
 
@@ -29,9 +30,10 @@
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/now_degree_text"
             android:layout_toRightOf="@id/now_degree_text"
-            android:text="晴"
+            android:text=""
             android:textColor="@color/basic"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            tools:ignore="RtlHardcoded" />
 
         <TextView
             android:id="@+id/now_winddir_text"
@@ -40,7 +42,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
             android:layout_marginBottom="40dp"
-            android:text="东南风"
+            android:text=""
             android:textColor="@color/basic"
             android:textSize="20sp" />
 
@@ -51,9 +53,10 @@
             android:layout_alignBottom="@id/now_winddir_text"
             android:layout_marginLeft="15dp"
             android:layout_toRightOf="@id/now_winddir_text"
-            android:text="3-4级"
+            android:text=""
             android:textColor="@color/basic"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            tools:ignore="RtlHardcoded" />
 
         <TextView
             android:id="@+id/now_feel_temp"
@@ -61,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="70dp"
-            android:text="体感温度17°"
+            android:text=""
             android:textColor="@color/basic"
             android:textSize="20sp" />
 
@@ -71,7 +74,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="15dp"
-            android:text="--上滑查看更多--"
+            android:text="@string/tip"
             android:textColor="@color/basic" />
 
         <ImageButton
@@ -80,7 +83,8 @@
             android:layout_height="30dp"
             android:background="@drawable/voice_selector"
             android:layout_alignTop="@id/now_degree_text"
-            android:layout_toEndOf="@id/now_degree_text" />
+            android:layout_toEndOf="@id/now_degree_text"
+            tools:ignore="ContentDescription" />
     </RelativeLayout>
 
     <LinearLayout

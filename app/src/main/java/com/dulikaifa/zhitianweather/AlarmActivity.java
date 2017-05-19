@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TimePicker;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -21,6 +22,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
 /**
+ *
  * Created by hasee on 2017/5/11.
  */
 
@@ -44,7 +46,7 @@ public class AlarmActivity extends BaseActivity {
         //闹钟服务
         alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
-        adapter = new ArrayAdapter<AlarmActivity.AlarmData>(AlarmActivity.this, android.R.layout.simple_list_item_1);
+        adapter = new ArrayAdapter<>(AlarmActivity.this, android.R.layout.simple_list_item_1);
         lvAlarm.setAdapter(adapter);
         //读取设置好的闹钟时间
 
@@ -96,7 +98,7 @@ public class AlarmActivity extends BaseActivity {
         AlarmData ad = adapter.getItem(position);
         adapter.remove(ad);
         saveAlarmList();
-        alarmManager.cancel(PendingIntent.getBroadcast(AlarmActivity.this, ad.getId(), new Intent("com.dulikaifa.zhitianweather"), 0));
+        alarmManager.cancel(PendingIntent.getBroadcast(AlarmActivity.this, ad != null ? ad.getId() : 0, new Intent("com.dulikaifa.zhitianweather"), 0));
     }
 
 
@@ -147,6 +149,7 @@ public class AlarmActivity extends BaseActivity {
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < adapter.getCount(); i++) {
+            //noinspection ConstantConditions
             sb.append(adapter.getItem(i).getTime()).append(",");
         }
 
@@ -190,7 +193,7 @@ public class AlarmActivity extends BaseActivity {
 
 
             //再使用date来创建时间
-            timeLabel = String.format("%d月%d日 %d:%d",
+            timeLabel = String.format(Locale.getDefault(),"%d月%d日 %d:%d",
                     date.get(Calendar.MONTH) + 1,
                     //month返回值从0开始
                     date.get(Calendar.DAY_OF_MONTH),

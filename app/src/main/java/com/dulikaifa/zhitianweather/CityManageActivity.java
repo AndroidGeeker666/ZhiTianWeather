@@ -38,8 +38,6 @@ public class CityManageActivity extends BaseActivity {
     @InjectView(R.id.lv_list)
     ListView lvList;
     private CityAdapter mAdapter;
-    private CityNameDbDao dao;
-    private List<CityBean> mDataList;
     private List<String> mCityList;
 
     @Override
@@ -64,9 +62,8 @@ public class CityManageActivity extends BaseActivity {
     @Override
     protected void initData() {
         mCityList = new ArrayList<>();
-        dao = new CityNameDbDao(this);
-        mDataList = new ArrayList<>();
-        mDataList = dao.findAll();
+        CityNameDbDao dao = new CityNameDbDao(this);
+        List<CityBean> mDataList = dao.findAll();
         mAdapter = new CityAdapter(R.layout.city_item, CityManageActivity.this, mDataList, dao);
         lvList.setAdapter(mAdapter);
     }

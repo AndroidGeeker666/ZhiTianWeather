@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="今天"
+        android:text=""
         android:textColor="@color/basic"
         android:textSize="20sp"
         />
@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="晴"
+        android:text=""
         android:textColor="@color/basic"
         android:textSize="20sp"
         />
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="18~27°"
+        android:text=""
         android:textColor="@color/basic"
         android:textSize="20sp"
         />

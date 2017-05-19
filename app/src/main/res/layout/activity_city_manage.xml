@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="城市收藏"
+            android:text="@string/city_favorite"
             android:textColor="#fff"
             android:textStyle="bold"
             android:textSize="22sp"/>

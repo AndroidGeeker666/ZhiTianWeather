@@ -17,7 +17,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="空气质量"
+            android:text="@string/air_quality"
             android:textColor="@color/basic"
             android:textSize="24sp"
             />
@@ -29,6 +29,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:baselineAligned="false"
         android:orientation="horizontal">
         <!--空气质量指数-->
         <RelativeLayout
@@ -39,7 +40,7 @@
             <TextView
                 android:id="@+id/air"
                 style="@style/ForecastStyle"
-                android:text="空气质量指数"
+                android:text="@string/air_quality_index"
                 android:textColor="@color/basic"
                 android:textSize="18sp"/>
 
@@ -47,7 +48,7 @@
                 android:id="@+id/air_text"
                 style="@style/ForecastStyle"
                 android:layout_below="@id/air"
-                android:text="良"
+                android:text="@string/good"
                 android:textColor="@color/basic"
                 android:textSize="14sp"/>
         </RelativeLayout>
@@ -60,7 +61,7 @@
             <TextView
                 android:id="@+id/aqi"
                 style="@style/ForecastStyle"
-                android:text="AQI指数"
+                android:text="@string/aqi"
                 android:textColor="@color/basic"
                 android:textSize="18sp"/>
 
@@ -68,7 +69,7 @@
                 android:id="@+id/aqi_text"
                 style="@style/ForecastStyle"
                 android:layout_below="@id/aqi"
-                android:text="66"
+                android:text=""
                 android:textColor="@color/basic"
                 android:textSize="14sp"/>
         </RelativeLayout>
@@ -79,6 +80,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:baselineAligned="false"
         android:orientation="horizontal">
         <!--CO指数-->
         <RelativeLayout
@@ -89,7 +91,7 @@
             <TextView
                 android:id="@+id/co"
                 style="@style/ForecastStyle"
-                android:text="CO指数"
+                android:text="@string/co"
                 android:textColor="@color/basic"
                 android:textSize="18sp"/>
 
@@ -97,7 +99,7 @@
                 android:id="@+id/co_text"
                 style="@style/ForecastStyle"
                 android:layout_below="@id/co"
-                android:text="66"
+                android:text=""
                 android:textColor="@color/basic"
                 android:textSize="14sp"/>
         </RelativeLayout>
@@ -110,7 +112,7 @@
             <TextView
                 android:id="@+id/no2"
                 style="@style/ForecastStyle"
-                android:text="NO2指数"
+                android:text="@string/no2"
                 android:textColor="@color/basic"
                 android:textSize="18sp"/>
 
@@ -118,7 +120,7 @@
                 android:id="@+id/no2_text"
                 style="@style/ForecastStyle"
                 android:layout_below="@id/no2"
-                android:text="66"
+                android:text=""
                 android:textColor="@color/basic"
                 android:textSize="14sp"/>
         </RelativeLayout>
@@ -129,6 +131,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:baselineAligned="false"
         android:orientation="horizontal">
         <!--O3指数-->
         <RelativeLayout
@@ -139,7 +142,7 @@
             <TextView
                 android:id="@+id/o3"
                 style="@style/ForecastStyle"
-                android:text="O3指数"
+                android:text="@string/o3"
                 android:textColor="@color/basic"
                 android:textSize="18sp"/>
 
@@ -147,7 +150,7 @@
                 android:id="@+id/o3_text"
                 style="@style/ForecastStyle"
                 android:layout_below="@id/o3"
-                android:text="66"
+                android:text=""
                 android:textColor="@color/basic"
                 android:textSize="14sp"/>
         </RelativeLayout>
@@ -160,7 +163,7 @@
             <TextView
                 android:id="@+id/so2"
                 style="@style/ForecastStyle"
-                android:text="SO2指数"
+                android:text="@string/so2"
                 android:textColor="@color/basic"
                 android:textSize="18sp"/>
 
@@ -168,7 +171,7 @@
                 android:id="@+id/so2_text"
                 style="@style/ForecastStyle"
                 android:layout_below="@id/so2"
-                android:text="66"
+                android:text=""
                 android:textColor="@color/basic"
                 android:textSize="14sp"/>
         </RelativeLayout>
@@ -179,6 +182,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:baselineAligned="false"
         android:orientation="horizontal">
         <!--PM10指数-->
         <RelativeLayout
@@ -189,7 +193,7 @@
             <TextView
                 android:id="@+id/pm10"
                 style="@style/ForecastStyle"
-                android:text="PM10指数"
+                android:text="@string/pm10"
                 android:textColor="@color/basic"
                 android:textSize="18sp"/>
 
@@ -197,7 +201,7 @@
                 android:id="@+id/pm10_text"
                 style="@style/ForecastStyle"
                 android:layout_below="@id/pm10"
-                android:text="66"
+                android:text=""
                 android:textColor="@color/basic"
                 android:textSize="14sp"/>
         </RelativeLayout>
@@ -210,7 +214,7 @@
             <TextView
                 android:id="@+id/pm25"
                 style="@style/ForecastStyle"
-                android:text="PM2.5指数"
+                android:text="@string/pm2_5"
                 android:textColor="@color/basic"
                 android:textSize="18sp"/>
 
@@ -218,7 +222,7 @@
                 android:id="@+id/pm25_text"
                 style="@style/ForecastStyle"
                 android:layout_below="@id/pm25"
-                android:text="66"
+                android:text=""
                 android:textColor="@color/basic"
                 android:textSize="14sp"/>
         </RelativeLayout>

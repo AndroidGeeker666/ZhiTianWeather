@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="欢迎使用知天天气"
+        android:text="@string/welcome"
         android:textColor="@android:color/white"
         android:textSize="35sp"
         />
@@ -21,7 +21,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
-        android:text="版本:2.0"
+        android:text="@string/version_show"
         android:textColor="@android:color/white"
         android:textSize="16sp"/>
 

@@ -6,13 +6,13 @@ import android.os.Bundle;
 import android.os.Handler;
 
 public class SplashActivity extends Activity {
-    private final int SPLASH_DISPLAY_LENGHT = 1500; // 延迟两秒
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        int SPLASH_DISPLAY_LENGHT = 1500;
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="#D8F5F3"
-              android:orientation="vertical">
+    android:layout_height="match_parent"
+    android:background="#D8F5F3"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="城市搜索"
+            android:text="@string/city_search"
             android:textStyle="bold"
             android:textColor="#fff"
             android:textSize="22sp"/>
@@ -47,7 +47,7 @@
             android:layout_marginStart="10dp"
             android:scaleType="center"
             android:src="@mipmap/ic_search"
-            />
+            tools:ignore="ContentDescription" />
 
         <EditText
             android:id="@+id/edit_search"
@@ -56,7 +56,7 @@
             android:layout_margin="4dp"
             android:layout_weight="1"
             android:background="@color/basic"
-            android:hint="请输入国内外城市名称"
+            android:hint="@string/input_city"
 
             />
 
@@ -68,7 +68,7 @@
             android:layout_marginEnd="20dp"
             android:src="@mipmap/ic_search_clear"
             android:visibility="gone"
-            />
+            tools:ignore="ContentDescription" />
 
         <Button
             android:id="@+id/btn_search"
@@ -78,7 +78,7 @@
             android:layout_gravity="center"
             android:layout_marginEnd="6dp"
             android:background="@drawable/btn_bg_selector"
-            android:text="搜索"
+            android:text="@string/search"
             android:textColor="@android:color/white"
             android:textSize="20sp"
 
@@ -97,9 +97,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:text="魏县"
+            android:text="@string/demo_city"
             android:textColor="#000"
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:visibility="invisible"
             />
     </LinearLayout>
@@ -109,7 +109,6 @@
         android:layout_height="match_parent">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/voice2_img"
             android:layout_width="96dp"
             android:layout_height="96dp"
@@ -125,7 +124,7 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="50dp"
-            android:text="语音搜索城市天气，解放你双手"
+            android:text="@string/voice_search"
             android:textColor="@color/black"
             android:textSize="18sp" />
     </RelativeLayout>

@@ -1,10 +1,15 @@
 package com.dulikaifa.zhitianweather;
 
+import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
@@ -14,6 +19,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -48,7 +54,8 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-import static com.dulikaifa.zhitianweather.MyApplication.context;
+import static com.dulikaifa.zhitianweather.R.id.today_temp;
+import static com.dulikaifa.zhitianweather.R.id.today_weather;
 
 
 /**
@@ -162,10 +169,14 @@ public class WeatherActivity extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     private AutoVoiceCastReceiver receiver;
 
-
+    /**
+     * 初始化
+     *
+     * @param savedInstanceState 存储界面关闭前存储的数据的Bundle对象
+     */
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         transparentStatusBar();
@@ -181,39 +192,49 @@ public class WeatherActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * 注册自动播报的广播
+     */
     private void registerAutoVoiceCastReceiver() {
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.dulikaifa.zhitianweather");
         receiver = new AutoVoiceCastReceiver();
-        registerReceiver(receiver,filter);
+        registerReceiver(receiver, filter);
 
     }
-
 
 
     class AutoVoiceCastReceiver extends BroadcastReceiver {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
-            if (mWeatherId!=null&&mCountryName!=null){
-                requesWeather(mWeatherId,mCountryName);
+        public void onReceive(final Context context, final Intent intent) {
+            if (mWeatherId != null && mCountryName != null) {
+                requesWeather(mWeatherId, mCountryName);
                 Toast.makeText(WeatherActivity.this, "定时任务执行了！", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
+    /**
+     * 初始化讯飞语音参数配置
+     */
     private void initIflyVoice() {
         //1.创建SpeechSynthesizer 对象, 第二个参数：本地合成时传InitListener
-        mTts = SpeechSynthesizer.createSynthesizer(context, null);
-        mTts.setParameter(SpeechConstant.SPEED, "50");//设置语速
-        mTts.setParameter(SpeechConstant.VOLUME, "80");//设置音量，范围0~100
+        mTts = SpeechSynthesizer.createSynthesizer(this, null);
+        mTts.setParameter(SpeechConstant.SPEED, "50"); //设置语速
+        mTts.setParameter(SpeechConstant.VOLUME, "80"); //设置音量，范围0~100
         mTts.setParameter(SpeechConstant.ENGINE_TYPE, SpeechConstant.TYPE_CLOUD); //设置云端
 
     }
 
+    /**
+     * app异常关闭重新启动后恢复状态和数据
+     *
+     * @param savedInstanceState 存储界面关闭前存储的数据的Bundle对象
+     */
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    protected void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState != null) {
             mWeatherId = (String) savedInstanceState.get("weather_id");
@@ -222,13 +243,21 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * app异常关闭前保存状态和数据
+     *
+     * @param outState 存储界面关闭前存储的数据的Bundle对象
+     */
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("weather_id", mWeatherId);
         outState.putString("countryName", mCountryName);
     }
 
+    /**
+     * Activity的生命周期onResume()
+     */
     public void onResume() {
         super.onResume();
         MobclickAgent.onResume(this);
@@ -237,6 +266,9 @@ public class WeatherActivity extends AppCompatActivity {
         FlowerCollector.onPageStart(TAG);
     }
 
+    /**
+     * Activity的生命周期onPause()
+     */
     public void onPause() {
         super.onPause();
         MobclickAgent.onPause(this);
@@ -245,6 +277,9 @@ public class WeatherActivity extends AppCompatActivity {
         FlowerCollector.onPause(WeatherActivity.this);
     }
 
+    /**
+     * Activity的生命周期onDestroy()
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -258,9 +293,11 @@ public class WeatherActivity extends AppCompatActivity {
 
     }
 
-    //使状态栏透明
+    /**
+     * 使状态栏透明
+     */
     private void transparentStatusBar() {
-        if (Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             View decorView = getWindow().getDecorView();
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
@@ -268,11 +305,14 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 初始化界面
+     */
     private void initView() {
         initIflyVoice();
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String bingPic = prefs.getString("bing_pic", null);
-        if (bingPic != null) {//本地有缓存的必应图片，直接从缓存中加载
+        if (bingPic != null) { //本地有缓存的必应图片，直接从缓存中加载
             Glide.with(this).load(bingPic).into(bingPicImg);
         } else {            //本地没有缓存的必应图片，则从网络请求
             loadBingPic();
@@ -285,11 +325,11 @@ public class WeatherActivity extends AppCompatActivity {
             swipeRefresh.setRefreshing(true);
             requesWeather(location[1], location[0]);
         } else {
-            String COUNTRY = getIntent().getStringExtra("COUNTRY");
+            String country = getIntent().getStringExtra("COUNTRY");
             String fragmentCountyName = getIntent().getStringExtra("fragmentCountyName");
-            if (COUNTRY != null && fragmentCountyName != null) {
+            if (country != null && fragmentCountyName != null) {
                 swipeRefresh.setRefreshing(true);
-                requesWeather(fragmentCountyName, COUNTRY);
+                requesWeather(fragmentCountyName, country);
             } else {
                 String weatherStr = prefs.getString("json", null);
                 String weatherId = prefs.getString("weatherId", null);
@@ -307,9 +347,15 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
 
-
+    /**
+     * 接受山上个关闭界面回传的数据
+     *
+     * @param requestCode 请求码
+     * @param resultCode  结果码
+     * @param data        包含回传数据的Intent对象
+     */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
 
         switch (requestCode) {
             case REQUEST_CODE:
@@ -324,13 +370,13 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
 
-    /*
-          加载必应每日一图
-        */
+    /**
+     * 加载必应每日一图
+     */
     private void loadBingPic() {
         OkHttpUtil.getInstance().getAsync(Url.BINGPIC_URL, new JsonRequestCallback() {
             @Override
-            public void onRequestSucess(String result) {
+            public void onRequestSucess(final String result) {
                 editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
                 editor.putString("bing_pic", result);
                 editor.apply();
@@ -338,12 +384,15 @@ public class WeatherActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onRequestFailure(String result) {
+            public void onRequestFailure(final String result) {
                 Toast.makeText(WeatherActivity.this, "获取必应图片失败！失败原因：" + result, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    /**
+     * 初始化监听器
+     */
     private void initListener() {
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -358,12 +407,15 @@ public class WeatherActivity extends AppCompatActivity {
 
     /**
      * 根据天气id请求城市天气信息。
+     *
+     * @param weatherId   城市名称
+     * @param countryName 国家名称
      */
     public void requesWeather(final String weatherId, final String countryName) {
         String weatherUrl = Url.WEATHER_Url + "?city=" + weatherId + "&key=" + Url.APP_KEY;
         OkHttpUtil.getInstance().getAsync(weatherUrl, new JsonRequestCallback() {
             @Override
-            public void onRequestSucess(String result) {
+            public void onRequestSucess(final String result) {
                 swipeRefresh.setRefreshing(false);
                 mWeatherId = weatherId;
                 mCountryName = countryName;
@@ -379,14 +431,20 @@ public class WeatherActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onRequestFailure(String result) {
+            public void onRequestFailure(final String result) {
                 swipeRefresh.setRefreshing(false);
                 Toast.makeText(WeatherActivity.this, "网络异常,请检查网络设置!", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void showView(String countryName, Weather weather) {
+    /**
+     * 显示界面
+     *
+     * @param countryName 国家名称
+     * @param weather     天气
+     */
+    private void showView(final String countryName, final Weather weather) {
         if (weather != null && "ok".equals(weather.status)) {
             if (countryName.equals("中国")) {
                 basicLayout.setVisibility(View.VISIBLE);
@@ -416,9 +474,9 @@ public class WeatherActivity extends AppCompatActivity {
                 } else {
                     Intent intent = new Intent(this, AutoUpdateService.class);
                     startService(intent);
-
                 }
             }
+            sendNotification();
 
         } else {
             Toast.makeText(WeatherActivity.this, "存取json发生错误，请检查！", Toast.LENGTH_SHORT).show();
@@ -426,14 +484,49 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
 
+    private void sendNotification() {
+        Intent intent = new Intent(this, WeatherActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        String condition = mWeather.now.nowCondition.weather + "    ";
+        String temp = mWeather.now.nowTemperature + "°    ";
+        String windDir = mWeather.now.wind.nowWindDirection + "    ";
+        String windPower = mWeather.now.wind.nowWindPower;
+        Notification noti = new NotificationCompat.Builder(this)
+                .setContentTitle(mWeatherId + "当前天气")
+                .setContentText(condition + temp + windDir + windPower)
+                .setStyle(new NotificationCompat.BigPictureStyle().bigPicture(BitmapFactory.decodeResource(getResources(),R.mipmap.logo666)))
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.mipmap.logo666)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.logo666))
+                .setContentIntent(pi)
+                .setAutoCancel(true)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .build();
+        manager.notify(1, noti);
 
-    private void showAllInfo(Weather weather) {
+
+    }
+
+    /**
+     * 显示全部天气信息
+     *
+     * @param weather 天气
+     */
+    private void showAllInfo(final Weather weather) {
         showPartInfo(weather);
         showCommonInfo(weather);
 
     }
 
-    private void showPartInfo(Weather weather) {
+    /**
+     * 显示部分天气信息
+     *
+     * @param weather 天气
+     */
+    @SuppressLint("SetTextI18n")
+    private void showPartInfo(final Weather weather) {
 
         if (weather.aqi != null) {
             airText.setText(weather.aqi.city.qlty);
@@ -478,8 +571,12 @@ public class WeatherActivity extends AppCompatActivity {
 
     /**
      * 显示天气信息
+     *
+     * @param weather 天气信息
      */
-    private void showCommonInfo(Weather weather) {
+
+    @SuppressLint("SetTextI18n")
+    private void showCommonInfo(final Weather weather) {
         if (weather != null) {
             basicCity.setText(weather.basic.cityName);
             basicUpdatetime.setText(weather.basic.update.updateTime);
@@ -487,21 +584,21 @@ public class WeatherActivity extends AppCompatActivity {
             nowWeatherText.setText(weather.now.nowCondition.weather);
             nowWinddirText.setText(weather.now.wind.nowWindDirection);
             nowFeelTemp.setText("体感温度" + weather.now.nowFeelTemperature + "°");
-            nowWindpowerText.setText(getWindPower(weather));
+            nowWindpowerText.setText(getWindPower());
             dynamicLayout.removeAllViews();
             for (int i = 0; i < weather.forecastList.size(); i++) {
                 Forecast forecast = weather.forecastList.get(i);
                 View view = LayoutInflater.from(this).inflate(R.layout.dynamic_item, dynamicLayout, false);
                 TextView today = (TextView) view.findViewById(R.id.today);
-                TextView today_weather = (TextView) view.findViewById(R.id.today_weather);
-                TextView today_temp = (TextView) view.findViewById(R.id.today_temp);
+                TextView todayWeather = (TextView) view.findViewById(today_weather);
+                TextView todayTemp = (TextView) view.findViewById(today_temp);
                 today.setText(forecast.date.substring(5));
                 if (forecast.condition.weatherDay.equals(forecast.condition.weatherNight)) {
-                    today_weather.setText(forecast.condition.weatherDay);
+                    todayWeather.setText(forecast.condition.weatherDay);
                 } else {
-                    today_weather.setText(forecast.condition.weatherDay + "转" + forecast.condition.weatherNight);
+                    todayWeather.setText(forecast.condition.weatherDay + "转" + forecast.condition.weatherNight);
                 }
-                today_temp.setText(forecast.temperature.min + "~" + forecast.temperature.max + "°");
+                todayTemp.setText(forecast.temperature.min + "~" + forecast.temperature.max + "°");
                 dynamicLayout.addView(view);
                 if (i != 2) {
                     View view1 = LayoutInflater.from(this).inflate(R.layout.line, dynamicLayout, false);
@@ -537,7 +634,7 @@ public class WeatherActivity extends AppCompatActivity {
                 tempText.setText(forecast.temperature.min + "~" + forecast.temperature.max + "°");
                 winddegText.setText(forecast.wind.windDegree + "°");
                 winddirText.setText(forecast.wind.windDirection);
-                windpowerText.setText(getWindPower(weather));
+                windpowerText.setText(getWindPower());
                 windspeedText.setText(forecast.wind.windSpeed + "kmph");
                 humidityText.setText(forecast.humidity + "%");
                 rainProbabilityText.setText(forecast.rainProbability);
@@ -555,8 +652,13 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 处理点击事件
+     *
+     * @param view 用户点击到的控件
+     */
     @OnClick({R.id.nav_button, R.id.city_add, R.id.iv_voice})
-    public void onClick(View view) {
+    public void onClick(final View view) {
         switch (view.getId()) {
             case R.id.nav_button:
                 drawerLayout.openDrawer(GravityCompat.START);
@@ -576,13 +678,16 @@ public class WeatherActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * 播报天气
+     */
     public void voiceWeatherForecast() {
         if (NetStatusUtil.isNetworkAvailable(WeatherActivity.this)) {
             prefs = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this);
             String speaker = prefs.getString("speakerName", SPEAKER_NAME);
             //设置发音人
             mTts.setParameter(SpeechConstant.VOICE_NAME, speaker); //设置发音人
-            String forecastContent = getForecastContent(mWeather, mWeatherId, mCountryName);
+            String forecastContent = getForecastContent();
             ivVoice.setBackgroundResource(R.drawable.voice);
             final AnimationDrawable imageAnim = (AnimationDrawable) ivVoice.getBackground();
             if (!mTts.isSpeaking() && (forecastContent != null)) {
@@ -594,7 +699,7 @@ public class WeatherActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onBufferProgress(int i, int i1, int i2, String s) {
+                    public void onBufferProgress(final int i, final int i1, final int i2, final String s) {
 
                     }
 
@@ -609,19 +714,19 @@ public class WeatherActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSpeakProgress(int i, int i1, int i2) {
+                    public void onSpeakProgress(final int i, final int i1, final int i2) {
 
                     }
 
                     @Override
-                    public void onCompleted(SpeechError speechError) {
+                    public void onCompleted(final SpeechError speechError) {
 
                         imageAnim.stop();
                         ivVoice.setBackgroundResource(R.drawable.voice_selector);
                     }
 
                     @Override
-                    public void onEvent(int i, int i1, int i2, Bundle bundle) {
+                    public void onEvent(final int i, final int i1, final int i2, final Bundle bundle) {
 
                     }
                 });
@@ -637,32 +742,41 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 获取天气播报内容
+     *
+     * @return getTimeContent() + getWeatherContent();
+     */
+    public String getForecastContent() {
 
-    public String getForecastContent(Weather weather, String mWeatherId, String mCountryName) {
-
-        return getTimeContent() + getWeatherContent(weather, mWeatherId, mCountryName);
+        return getTimeContent() + getWeatherContent();
 
     }
 
-    private String getWeatherContent(Weather weather, String mWeatherId, String mCountryName) {
-        if (weather != null) {
+    /**
+     * 获取天气内容
+     *
+     * @return
+     */
+    private String getWeatherContent() {
+        if (mWeather != null) {
 
-            String todayWeather = null;
+            String todayWeather;
             String airQulity = null;
             String airAqi = null;
-            if (weather.forecastList.get(0).condition.weatherDay.equals(weather.forecastList.get(0).condition.weatherNight)) {
-                todayWeather = weather.forecastList.get(0).condition.weatherDay;
+            if (mWeather.forecastList.get(0).condition.weatherDay.equals(mWeather.forecastList.get(0).condition.weatherNight)) {
+                todayWeather = mWeather.forecastList.get(0).condition.weatherDay;
             } else {
-                todayWeather = weather.forecastList.get(0).condition.weatherDay + "转" + weather.forecastList.get(0).condition.weatherNight;
+                todayWeather = mWeather.forecastList.get(0).condition.weatherDay + "转" + mWeather.forecastList.get(0).condition.weatherNight;
             }
-            String todayTemp = weather.forecastList.get(0).temperature.min + "至" + weather.forecastList.get(0).temperature.max + "度";
-            String todayWind = weather.forecastList.get(0).wind.windDirection + "," + getWindPower(weather);
+            String todayTemp = mWeather.forecastList.get(0).temperature.min + "至" + mWeather.forecastList.get(0).temperature.max + "度";
+            String todayWind = mWeather.forecastList.get(0).wind.windDirection + "," + getWindPower();
             if (mCountryName.equals("中国") && (!mWeatherId.equals("西安")) && (!mWeatherId.equals("河北"))) {
-                airQulity = weather.aqi.city.qlty;
-                airAqi = weather.aqi.city.aqi;
+                airQulity = mWeather.aqi.city.qlty;
+                airAqi = mWeather.aqi.city.aqi;
             }
 
-            if (mCountryName != null && mCountryName.equals("中国")) {
+            if (mCountryName.equals("中国")) {
 
                 return mWeatherId + ",今天天气," + todayWeather + "," + todayTemp + "," + todayWind + ",空气质量指数," + airAqi + ",空气质量," + airQulity;
             } else {
@@ -672,25 +786,41 @@ public class WeatherActivity extends AppCompatActivity {
         return null;
     }
 
-    private String getWindPower(Weather weather) {
+    /**
+     * 获取格式化风力
+     *
+     * @return (windPower.equals("微风")) ? windPower : (windPower + "级");
+     */
+    private String getWindPower() {
 
-        String windPower = weather.forecastList.get(0).wind.windPower;
+        String windPower = mWeather.forecastList.get(0).wind.windPower;
         return (windPower.equals("微风")) ? windPower : (windPower + "级");
     }
 
+    /**
+     * 获取播报的时间内容
+     *
+     * @return "主人好，现在是" + mYear + "年" + mMonth + "月" + mDay + "日," + getWeek(mWeek) + "," + mHour + "点" + mMinute + "分,";
+     */
     private String getTimeContent() {
-        Calendar c = Calendar.getInstance();//首先要获取日历对象
+        Calendar c = Calendar.getInstance(); //首先要获取日历对象
         int mYear = c.get(Calendar.YEAR); // 获取当前年份
-        int mMonth = c.get(Calendar.MONTH) + 1;// 获取当前月份
-        int mDay = c.get(Calendar.DAY_OF_MONTH);// 获取当日期
-        int mWeek = c.get(Calendar.DAY_OF_WEEK);// 获取当前日期的星期
-        int mHour = c.get(Calendar.HOUR_OF_DAY);//时
-        int mMinute = c.get(Calendar.MINUTE);//分
+        int mMonth = c.get(Calendar.MONTH) + 1; // 获取当前月份
+        int mDay = c.get(Calendar.DAY_OF_MONTH); // 获取当日期
+        int mWeek = c.get(Calendar.DAY_OF_WEEK); // 获取当前日期的星期
+        int mHour = c.get(Calendar.HOUR_OF_DAY); //时
+        int mMinute = c.get(Calendar.MINUTE); //分
 
         return "主人好，现在是" + mYear + "年" + mMonth + "月" + mDay + "日," + getWeek(mWeek) + "," + mHour + "点" + mMinute + "分,";
     }
 
-    private String getWeek(int week) {
+    /**
+     * 获取星期
+     *
+     * @param week 星期
+     * @return realWeek
+     */
+    private String getWeek(final int week) {
         String realWeek = null;
         switch (week) {
             case 1:
@@ -718,7 +848,9 @@ public class WeatherActivity extends AppCompatActivity {
         return realWeek;
     }
 
-
+    /**
+     * 处理返回键点击事件
+     */
     @Override
     public void onBackPressed() {
 

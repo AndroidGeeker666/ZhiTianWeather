@@ -271,8 +271,9 @@ public class SearchActivity extends BaseActivity {
                     intent.putExtra("searchProvinceName", searchProvinceName);
                     intent.putExtra("searchCityName", searchCityName);
                     SearchActivity.this.setResult(RESULT_CODE, intent);
-                    SearchActivity.this.finish();
+                    finish();
                 }
+                break;
             case R.id.iv_search_clear:
                 editSearch.getText().clear();
                 clear.setVisibility(View.GONE);
@@ -291,7 +292,6 @@ public class SearchActivity extends BaseActivity {
                 }
                 break;
             default:
-
                 break;
         }
 
@@ -309,21 +309,27 @@ public class SearchActivity extends BaseActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, final @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case 1:
-                if (grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // 移动数据分析，收集开始听写事件
                     startListenToWrite();
-                }else {
-                    Toast.makeText(this,"你拒绝授予录音权限,将不能使用语音搜索功能",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "你拒绝授予录音权限,将不能使用语音搜索功能", Toast.LENGTH_SHORT).show();
                     setContentView(R.layout.activity_main);
                 }
                 break;
         }
     }
+
+    /**
+     *
+     * @param cityName
+     * @return
+     */
     @NonNull
-    private String getUrl(String cityName) {
+    private String getUrl(final String cityName) {
         return Url.SEARCH_CITY_URL + "?city=" + cityName + "&key=" + Url.APP_KEY;
     }
 
@@ -344,7 +350,7 @@ public class SearchActivity extends BaseActivity {
         public void onError(SpeechError error) {
             String plainDescription = error.getPlainDescription(true);
 
-            Toast.makeText(SearchActivity.this, error.getPlainDescription(true), Toast.LENGTH_LONG).show();
+            Toast.makeText(SearchActivity.this, plainDescription, Toast.LENGTH_LONG).show();
         }
 
     };

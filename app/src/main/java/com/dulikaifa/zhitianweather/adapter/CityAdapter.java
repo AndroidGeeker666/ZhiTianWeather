@@ -24,6 +24,7 @@ import butterknife.InjectView;
  * Usage :
  */
 
+@SuppressWarnings("ALL")
 public class CityAdapter extends BaseAdapter {
     private int mResource;
     private Context mContext;
@@ -42,6 +43,7 @@ public class CityAdapter extends BaseAdapter {
     public int getCount() {
         return mData.size();
     }
+
     @Override
     public CityBean getItem(int position) {
         return mData.get(position);

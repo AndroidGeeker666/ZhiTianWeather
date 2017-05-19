@@ -4,6 +4,7 @@ package com.dulikaifa.zhitianweather.http;
  * @author lixf21
  *
  */
+@SuppressWarnings("ALL")
 public interface JsonRequestCallback {
 	void onRequestSucess(String result);
 	void onRequestFailure(String result);

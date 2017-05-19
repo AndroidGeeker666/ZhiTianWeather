@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#D8F5F3"
@@ -25,39 +26,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="设置"
+            android:text="@string/set"
             android:textColor="#fff"
             android:textSize="22sp"
             android:textStyle="bold" />
 
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@android:color/white"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="15dp"
-            android:text="自动更新"
-            android:textColor="#000"
-            android:textSize="20sp" />
-
-        <Switch
-            android:id="@+id/switch_auto_update"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="10dp"
-            android:checked="true"
-            android:padding="10dp"
-            android:textOff="自动更新关闭"
-            android:textOn="自动更新打开" />
     </RelativeLayout>
 
     <Space
@@ -75,9 +48,10 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="15dp"
-            android:text="自动定位"
+            android:text="@string/auto_location"
             android:textColor="#000"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            tools:ignore="RtlHardcoded" />
 
         <Switch
             android:id="@+id/switch_auto_location"
@@ -88,8 +62,8 @@
             android:layout_marginEnd="10dp"
             android:checked="true"
             android:padding="10dp"
-            android:textOff="自动更新关闭"
-            android:textOn="自动更新打开" />
+            android:textOff="@string/auto_location_closed"
+            android:textOn="@string/auto_location_open" />
 
     </RelativeLayout>
 
@@ -104,9 +78,10 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="15dp"
-            android:text="自动播报"
+            android:text="@string/auto_cast"
             android:textColor="#000"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            tools:ignore="RtlHardcoded" />
 
         <Switch
             android:id="@+id/switch_auto_speak"
@@ -117,8 +92,8 @@
             android:layout_marginEnd="10dp"
             android:checked="true"
             android:padding="10dp"
-            android:textOff="自动播报关闭"
-            android:textOn="自动播报打开" />
+            android:textOff="@string/auto_cast_closed"
+            android:textOn="@string/auto_cast_open" />
 
     </RelativeLayout>
     <Space
@@ -138,9 +113,10 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="15dp"
-            android:text="定时播报"
+            android:text="@string/timing_cast"
             android:textColor="#000"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            tools:ignore="RtlHardcoded" />
 
         <ImageView
             android:id="@+id/imageView5"
@@ -149,7 +125,8 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="19dp"
-            android:src="@mipmap/rightarrow" />
+            android:src="@mipmap/rightarrow"
+            tools:ignore="ContentDescription" />
 
     </RelativeLayout>
 
@@ -170,9 +147,10 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="15dp"
-            android:text="选择天气预报员"
+            android:text="@string/choose_forecaster"
             android:textColor="#000"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            tools:ignore="RtlHardcoded" />
 
         <ImageView
             android:id="@+id/imageView2"
@@ -181,7 +159,8 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="19dp"
-            android:src="@mipmap/rightarrow" />
+            android:src="@mipmap/rightarrow"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/speaker"
@@ -189,7 +168,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toStartOf="@id/imageView2"
-            android:text="小燕"
+            android:text="@string/def_forecaster"
             android:textColor="@color/black"
             android:textSize="20sp" />
 
@@ -212,9 +191,10 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="15dp"
-            android:text="检测新版本"
+            android:text="@string/check_update"
             android:textColor="#000"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            tools:ignore="RtlHardcoded" />
 
         <TextView
             android:id="@+id/tv_version"
@@ -223,7 +203,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="15dp"
-            android:text="v2.0"
+            android:text="@string/version_name"
             android:textColor="#000"
             android:textSize="20sp" />
 
@@ -248,9 +228,10 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="15dp"
             android:layout_marginStart="14dp"
-            android:text="关于"
+            android:text="@string/about1"
             android:textColor="#000"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            tools:ignore="RtlHardcoded" />
     </RelativeLayout>
     <Space
         android:layout_width="match_parent"
@@ -269,8 +250,37 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="15dp"
             android:layout_marginStart="14dp"
-            android:text="鸣谢"
+            android:text="@string/express_gratitude"
+            android:textColor="#000"
+            android:textSize="20sp"
+            tools:ignore="RtlHardcoded" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@android:color/white"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="15dp"
+            android:text="@string/auto_update"
             android:textColor="#000"
             android:textSize="20sp" />
+
+        <Switch
+            android:id="@+id/switch_auto_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="10dp"
+            android:checked="true"
+            android:padding="10dp"
+            android:textOff="@string/auto_update_closed"
+            android:textOn="@string/auto_update_open" />
     </RelativeLayout>
 </LinearLayout>

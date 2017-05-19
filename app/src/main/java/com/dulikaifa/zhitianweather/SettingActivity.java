@@ -154,7 +154,7 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
                         .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
                             @Override
                             public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                /**
+                                /*
                                  * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
                                  * returning false here won't allow the newly selected radio button to actually be selected.
                                  **/
@@ -180,7 +180,7 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
 
                 break;
             case R.id.thanks_layout:
-                MaterialDialog dialog = new MaterialDialog.Builder(this)
+                new MaterialDialog.Builder(this)
                         .title(R.string.thanks)
                         .content(R.string.thanks_content)
                         .positiveText(R.string.positive)
@@ -197,8 +197,13 @@ public class SettingActivity extends BaseActivity implements CompoundButton.OnCh
         }
     }
 
+    /**
+     * 开关的监听
+     * @param compoundButton
+     * @param isChecked
+     */
     @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+    public void onCheckedChanged(final CompoundButton compoundButton, final boolean isChecked) {
 
 
         switch (compoundButton.getId()) {
