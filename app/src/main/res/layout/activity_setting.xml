@@ -108,7 +108,6 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/timing_speaker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -119,7 +118,6 @@
             tools:ignore="RtlHardcoded" />
 
         <ImageView
-            android:id="@+id/imageView5"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_alignParentEnd="true"
@@ -142,7 +140,6 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/select_speaker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"

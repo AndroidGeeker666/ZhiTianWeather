@@ -28,7 +28,6 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/air_dirty_index"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -69,7 +68,6 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/comfort_index"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -110,7 +108,6 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/car_wash_index"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -151,7 +148,6 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/dressing_index"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -192,7 +188,6 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/influenza_index"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -233,7 +228,6 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/sport_index"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -274,7 +268,6 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/travel_index"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -315,7 +308,6 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/ultravioletRay_index"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"

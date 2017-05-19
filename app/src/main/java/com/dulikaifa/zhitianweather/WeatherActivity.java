@@ -309,6 +309,7 @@ public class WeatherActivity extends AppCompatActivity {
      * 初始化界面
      */
     private void initView() {
+        swipeRefresh.setColorSchemeResources(R.color.widget);
         initIflyVoice();
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String bingPic = prefs.getString("bing_pic", null);
@@ -468,10 +469,7 @@ public class WeatherActivity extends AppCompatActivity {
             }
             boolean isUpdateServiceOpen = prefs.getBoolean("isUpdateServiceOpen", true);
             if (isUpdateServiceOpen) {
-                if (ServiceStateUtils.isRunningService(WeatherActivity.this, "com.dulikaifa.zhitianweather.service.AutoUpdateService")) {
-                    Toast.makeText(WeatherActivity.this, "AutoUpdateService服务正在运行", Toast.LENGTH_SHORT).show();
-
-                } else {
+                if (!ServiceStateUtils.isRunningService(WeatherActivity.this, "com.dulikaifa.zhitianweather.service.AutoUpdateService")) {
                     Intent intent = new Intent(this, AutoUpdateService.class);
                     startService(intent);
                 }
@@ -495,7 +493,6 @@ public class WeatherActivity extends AppCompatActivity {
         Notification noti = new NotificationCompat.Builder(this)
                 .setContentTitle(mWeatherId + "当前天气")
                 .setContentText(condition + temp + windDir + windPower)
-                .setStyle(new NotificationCompat.BigPictureStyle().bigPicture(BitmapFactory.decodeResource(getResources(),R.mipmap.logo666)))
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.mipmap.logo666)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.logo666))

@@ -21,7 +21,6 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.dulikaifa.zhitianweather.http.NetStatusUtil;
-import com.orhanobut.logger.Logger;
 import com.umeng.analytics.MobclickAgent;
 
 import org.json.JSONArray;
@@ -296,11 +295,9 @@ public class MainActivity extends AppCompatActivity {
 
                     int errorCode = location.getErrorCode();
                     String errorInfo = location.getErrorInfo();
-                    Logger.d(errorCode);
-                    Logger.d(errorInfo);
                     //定位失败
-                    Toast.makeText(MainActivity.this, "自动定位失败,请手动选择城市！" +
-                            errorCode + "," + errorInfo, Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "自动定位失败,请手动选择城市！"
+                            + errorCode + "," + errorInfo, Toast.LENGTH_LONG).show();
                     setContentView(R.layout.activity_main);
                     sDialog.dismiss();
                     stopLocation();

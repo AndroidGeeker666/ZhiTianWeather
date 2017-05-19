@@ -43,14 +43,9 @@
     <string name="positive">确定</string>
     <string name="about">知天天气是一款简洁而实用的天气预报app，支持全球5万多城市未来3天的天气预报，
         包括32项预报数据，数据精准，体积小巧，占用内存极低，非常好用。</string>
-    <string name="muti_permission_default_style">Mutl Permission(Default Style)</string>
-    <string name="muti_permission_blue_style">Mutl Permission(Blue Style)</string>
-    <string name="single_permission">Single Permission</string>
     <string name="permission_be_concelled">您取消了授权</string>
-    <string name="permission_be_completed">权限全部申请完成completed</string>
     <string name="permission_be_dennied">您拒绝了授权</string>
     <string name="permission_be_granted">您同意了授权</string>
-    <string name="permission_cus_item_camera">Camera</string>
     <string name="permission_cus_item_location">Location</string>
     <string name="permission_cus_title">亲爱的用户您好</string>
     <string name="permission_cus_msg">为了给你提供当地的天气服务，\n请授予位置权限！</string>
